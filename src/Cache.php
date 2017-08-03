@@ -7,32 +7,30 @@
  * @subpackage  Cache
  * @author      chajr <chajr@bluetree.pl>
  */
-namespace Core\Blue\Model;
+namespace BlueCache;
 
-use Loader;
 use Exception;
 
-class Cache extends Object
+class Cache
 {
-    /**
-     * one day base value in seconds
-     */
-    const CACHE_BASE_TIME = 86400;
-
-    /**
-     * default time for configuration file
-     */
-    const CACHE_CONFIG_TIME = 1;
+    protected $config = [
+        'cache_base_time' => 86400,
+        'cache_config_time' => 1,
+        'storage' => 'file',
+        'storage_directory' => 'file',
+    ];
 
     /**
      * check that cache directory exist and create it if not
      */
-    public function __construct()
+    public function __construct(array $config)
     {
+        $this->config = array_merge($this->config, $config);
+        
         try{
             if (!file_exists(CORE_CACHE)) {
-                @mkdir(CORE_CACHE);
-                @chmod(CORE_CACHE, 0777);
+                mkdir(CORE_CACHE);
+                chmod(CORE_CACHE, 0777);
             }
         } catch (Exception $e) {
             Loader::exceptions($e);
@@ -78,7 +76,7 @@ class Cache extends Object
      * @param string $file
      * @return bool
      */
-    protected function _checkCachedTimes($file)
+    protected function checkCachedTimes($file)
     {
         $coreConfig = Loader::getConfiguration();
         $currentTime = time();
