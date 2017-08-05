@@ -3,13 +3,15 @@
  * Allows to manage cache
  * cache structure (module_code/cache_code.cache)
  *
- * @package     Core
- * @subpackage  Blue
+ * @package     Blue
+ * @subpackage  Cache
  * @author      chajr <chajr@bluetree.pl>
  */
 namespace Core\Blue\Model;
+
 use Loader;
 use Exception;
+
 class Cache extends Object
 {
     /**
@@ -47,14 +49,14 @@ class Cache extends Object
     {
         $file = CORE_CACHE . $cacheCode . '.cache';
         if (!file_exists($file)) {
-            return FALSE;
+            return false;
         }
 
-        if ($this->_checkCachedTimes($file)) {
-            return @file_get_contents($file);
+        if ($this->checkCachedTimes($file)) {
+            return file_get_contents($file);
         }
 
-        return FALSE;
+        return false;
     }
 
     /**
@@ -78,9 +80,9 @@ class Cache extends Object
      */
     protected function _checkCachedTimes($file)
     {
-        $coreConfig     = Loader::getConfiguration();
-        $currentTime    = time();
-        $fileTime       = filemtime($file);
+        $coreConfig = Loader::getConfiguration();
+        $currentTime = time();
+        $fileTime = filemtime($file);
 
         if ($coreConfig) {
             $validTime = $coreConfig->getCore()->getCacheTime();
@@ -91,9 +93,9 @@ class Cache extends Object
         $expireTime = ($validTime * self::CACHE_BASE_TIME) + $fileTime;
 
         if ($expireTime > $currentTime) {
-            return TRUE;
+            return true;
         }
 
-        return FALSE;
+        return false;
     }
 }
