@@ -10,31 +10,87 @@
 namespace BlueCache;
 
 use Exception;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\CacheItemInterface;
 
-class Cache
+class Cache implements CacheItemPoolInterface
 {
     protected $config = [
-        'cache_base_time' => 86400,
+        'expire_time' => 86400,
         'cache_config_time' => 1,
-        'storage' => 'file',
-        'storage_directory' => 'file',
+        'storage_class' => 'file',
+        'storage_directory' => './var/cache',
     ];
 
     /**
      * check that cache directory exist and create it if not
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         $this->config = array_merge($this->config, $config);
         
-        try{
-            if (!file_exists(CORE_CACHE)) {
-                mkdir(CORE_CACHE);
-                chmod(CORE_CACHE, 0777);
-            }
-        } catch (Exception $e) {
-            Loader::exceptions($e);
+        $this->storage = 'register new storage ??';
+    }
+
+    public function getItem($name)
+    {
+        if ($this->hasItem()) {
+            return $this->storage->get($name);
         }
+
+        return null;
+    }
+
+    public function getItems(array $names = [])
+    {
+        $list = [];
+
+        foreach ($names as $name) {
+            $list[$name] = $this->getItem($name);
+        }
+
+        return $list;
+    }
+
+    public function hasItem($name)
+    {
+        $this->storage->has($name);
+    }
+
+    public function clear()
+    {
+        $this->storage->clear();
+
+        return $this;
+    }
+
+    public function deleteItem($name)
+    {
+        $this->storage->delete($name);
+
+        return $this;
+    }
+
+    public function deleteItems(array $names)
+    {
+        $this->storage->deleteItems($names);
+
+        return $this;
+    }
+
+    public function save(CacheItemInterface $item)
+    {
+        
+    }
+
+    public function saveDeferred(CacheItemInterface $item)
+    {
+        
+    }
+
+    public function commit()
+    {
+        
     }
 
     /**
