@@ -15,27 +15,37 @@ use Psr\Cache\CacheItemInterface;
 
 class Cache implements CacheItemPoolInterface
 {
+    /**
+     * @var \BlueCache\Storage\StorageInterface
+     */
+    protected $storage;
+
+    /**
+     * @var array
+     */
     protected $config = [
         'expire_time' => 86400,
         'cache_config_time' => 1,
-        'storage_class' => 'file',
+        'storage_class' => '\BlueCache\Storage\File',
         'storage_directory' => './var/cache',
     ];
 
     /**
      * check that cache directory exist and create it if not
+     *
+     * @param array $config
      */
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->config, $config);
-        
-        $this->storage = 'register new storage ??';
+
+        $this->registerStorage();
     }
 
     public function getItem($name)
     {
-        if ($this->hasItem()) {
-            return $this->storage->get($name);
+        if ($this->hasItem($name)) {
+            return $this->storage->restore($name);
         }
 
         return null;
@@ -54,7 +64,7 @@ class Cache implements CacheItemPoolInterface
 
     public function hasItem($name)
     {
-        $this->storage->has($name);
+        $this->storage->exists($name);
     }
 
     public function clear()
@@ -66,21 +76,24 @@ class Cache implements CacheItemPoolInterface
 
     public function deleteItem($name)
     {
-        $this->storage->delete($name);
+        $this->storage->clear($name);
 
         return $this;
     }
 
     public function deleteItems(array $names)
     {
-        $this->storage->deleteItems($names);
+        $this->storage->clear($names);
 
         return $this;
     }
 
     public function save(CacheItemInterface $item)
     {
-        
+        $this->storage->store(
+            $item->getKey(),
+            $item->get()
+        );
     }
 
     public function saveDeferred(CacheItemInterface $item)
@@ -94,62 +107,20 @@ class Cache implements CacheItemPoolInterface
     }
 
     /**
-     * get cached configuration if it exists
-     * 
-     * @param string $cacheCode
-     * @return bool|mixed
+     * @return $this
      */
-    public function getCache($cacheCode)
+    private function registerStorage()
     {
-        $file = CORE_CACHE . $cacheCode . '.cache';
-        if (!file_exists($file)) {
-            return false;
+        if (!$this->storage) {
+            if ($this->config['storage_class']
+                && $this->config['storage_class'] instanceof \BlueCache\Storage\StorageInterface
+            ) {
+                $this->storage = $this->config['storage_class'];
+            } else {
+                $this->storage = new $this->config['storage_class'];
+            }
         }
 
-        if ($this->checkCachedTimes($file)) {
-            return file_get_contents($file);
-        }
-
-        return false;
-    }
-
-    /**
-     * add data to cache file, or create it
-     * 
-     * @param string $cacheCode
-     * @param mixed $data
-     * @return bool
-     */
-    public function setCache($cacheCode, $data)
-    {
-        $file = CORE_CACHE . $cacheCode . '.cache';
-        return (bool)file_put_contents($file, $data);
-    }
-
-    /**
-     * check cached file time
-     * 
-     * @param string $file
-     * @return bool
-     */
-    protected function checkCachedTimes($file)
-    {
-        $coreConfig = Loader::getConfiguration();
-        $currentTime = time();
-        $fileTime = filemtime($file);
-
-        if ($coreConfig) {
-            $validTime = $coreConfig->getCore()->getCacheTime();
-        } else {
-            $validTime = self::CACHE_CONFIG_TIME;
-        }
-
-        $expireTime = ($validTime * self::CACHE_BASE_TIME) + $fileTime;
-
-        if ($expireTime > $currentTime) {
-            return true;
-        }
-
-        return false;
+        return $this;
     }
 }
