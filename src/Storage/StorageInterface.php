@@ -2,6 +2,8 @@
 
 namespace BlueCache\Storage;
 
+use Psr\Cache\CacheItemInterface;
+
 interface StorageInterface
 {
     /**
@@ -12,17 +14,26 @@ interface StorageInterface
     public function __construct(array $params);
 
     /**
-     * @param string $name
-     * @param mixed $data
-     * @param string $type
-     * @return StorageInterface
+     * @param CacheItemInterface $item
+     * @return $this
      */
-    public function store($name, $data, $type = 'string');
+    public function store(CacheItemInterface $item);
+
+    /**
+     * @param array|string $name
+     * @return array|CacheItemInterface
+     */
+    public function restore($name);
 
     /**
      * @param string $name
-     * @param string $type
-     * @return mixed
+     * @return bool
      */
-    public function restore($name, $type = 'string');
+    public function exists($name);
+
+    /**
+     * @param string|null $name
+     * @return $this
+     */
+    public function clear($name = null);
 }

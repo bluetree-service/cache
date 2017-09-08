@@ -2,12 +2,22 @@
 
 namespace BlueCache\Storage;
 
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheException;
+
 class File implements StorageInterface
 {
     /**
      * @var array
      */
-    protected $params = [];
+    protected $params = [
+        'cache_path' => './var/cache',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $currentCache = [];
 
     /**
      * @param array $params
@@ -18,47 +28,148 @@ class File implements StorageInterface
     }
 
     /**
-     * @param string $name
-     * @param mixed $data
-     * @param string|int $expire
+     * @param CacheItemInterface $item
      * @return $this
      */
-    public function store($name, $data, $expire = '')
+    public function store(CacheItemInterface $item)
     {
-        //convert expire to timestamp
+        $data = serialize($item);
+        $key = $item->getKey();
 
-        $cacheFile = $this->params['cache_path'] . DIRECTORY_SEPARATOR . $name . '_' . $expire . '.cache';
+        $cacheFile = $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . '.cache';
         $dir = $this->params['cache_path'];
 
-        if (!mkdir($dir) && !is_dir($dir)) {
+        //?
+        if (!file_exists($dir) && !mkdir($dir) && !is_dir($dir)) {
             throw new CacheException('Unable to create cache directory: ' . $this->params['cache_path']);
         }
 
-        if (!file_put_contents($cacheFile, serialize($data))) {
+        if (!file_put_contents($cacheFile, $data)) {
             throw new CacheException('Unable to save log file: ' . $cacheFile);
         }
 
         return $this;
     }
 
-    public function restore($name, $type = 'string')
+    /**
+     * @param array|string $names
+     * @return array|CacheItemInterface
+     */
+    public function restore($names)
     {
-        
+        $list = [];
+
+        if (is_array($names)) {
+            foreach ($names as $name) {
+                $list['key'] = $this->getItem($name);
+            }
+        } else {
+            return $this->getItem($names);
+        }
+
+        return $list;
     }
 
-    public function clear($name = false)
+    /**
+     * @param array|string|null $names
+     * @return $this
+     */
+    public function clear($names = null)
     {
-        
+        switch (true) {
+            case is_null($names):
+                $cacheDir = $this->params['cache_path'] . DIRECTORY_SEPARATOR;
+
+                return $this->clearMany(glob($cacheDir . '*.cache'));
+
+            case is_array($names):
+                return $this->clearMany($names);
+
+            case is_string($names):
+                return $this->delete($names);
+
+            default:
+                throw new CacheException('Invalid expire type.');
+                break;
+        }
     }
 
-    public function exists($name)
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function exists($key)
     {
-        //find with regexp
-        return ;
+        /** @var CacheItemInterface|null $item */
+        $item = $this->getCacheItem($key);
+
+        if (is_null($item)) {
+            return false;
+        }
+
+        return $item->isHit();
     }
 
-    protected function expire($path)
+    /**
+     * @param string $key
+     * @return CacheItemInterface|null
+     */
+    protected function getItem($key)
     {
-        
+        if ($this->exists($key)) {
+            return $this->currentCache[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $key
+     * @return CacheItemInterface|null
+     */
+    protected function getCacheItem($key)
+    {
+        if (!isset($this->currentCache[$key])) {
+            if (file_exists($this->getFilePath($key))) {
+                /** @var CacheItemInterface $item */
+                $item = unserialize(file_get_contents($this->getFilePath($key)));
+
+                if (!$item->isHit()) {
+                    $this->delete($key);
+                    return null;
+                }
+            }
+        }
+
+        return $this->currentCache[$key];
+    }
+
+    /**
+     * @param array $list
+     * @return $this
+     */
+    protected function clearMany(array $list)
+    {
+        foreach ($list as $name) {
+            $this->delete($name);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @return $this
+     */
+    protected function delete($key)
+    {
+        unlink($this->getFilePath($key));
+
+        return $this;
+    }
+
+    protected function getFilePath($key)
+    {
+        return $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . '.cache';
     }
 }
