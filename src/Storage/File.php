@@ -22,9 +22,9 @@ class File implements StorageInterface
     /**
      * @param array $params
      */
-    public function __construct(array $params)
+    public function __construct(array $params = [])
     {
-        $this->params = $params;
+        $this->params = array_merge($this->params, $params);
     }
 
     /**
@@ -39,7 +39,6 @@ class File implements StorageInterface
         $cacheFile = $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . '.cache';
         $dir = $this->params['cache_path'];
 
-        //?
         if (!file_exists($dir) && !mkdir($dir) && !is_dir($dir)) {
             throw new CacheException('Unable to create cache directory: ' . $this->params['cache_path']);
         }
@@ -61,7 +60,7 @@ class File implements StorageInterface
 
         if (is_array($names)) {
             foreach ($names as $name) {
-                $list['key'] = $this->getItem($name);
+                $list[$name] = $this->getItem($name);
             }
         } else {
             return $this->getItem($names);
@@ -80,7 +79,7 @@ class File implements StorageInterface
             case is_null($names):
                 $cacheDir = $this->params['cache_path'] . DIRECTORY_SEPARATOR;
 
-                return $this->clearMany(glob($cacheDir . '*.cache'));
+                return $this->clearMany(glob($cacheDir . '*.cache'), true);
 
             case is_array($names):
                 return $this->clearMany($names);
@@ -138,7 +137,12 @@ class File implements StorageInterface
                     $this->delete($key);
                     return null;
                 }
+
+                $this->currentCache[$key] = $item;
+                return $item;
             }
+
+            return null;
         }
 
         return $this->currentCache[$key];
@@ -148,9 +152,13 @@ class File implements StorageInterface
      * @param array $list
      * @return $this
      */
-    protected function clearMany(array $list)
+    protected function clearMany(array $list, $removeExtension = false)
     {
         foreach ($list as $name) {
+            if ($removeExtension) {
+//                $name = rtrim($name, '\.cache');
+            }
+
             $this->delete($name);
         }
 
