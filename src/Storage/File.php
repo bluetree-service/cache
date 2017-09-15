@@ -3,10 +3,12 @@
 namespace BlueCache\Storage;
 
 use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheException;
+use BlueCache\CacheException;
 
 class File implements StorageInterface
 {
+    const CACHE_EXTENSION = '.cache';
+
     /**
      * @var array
      */
@@ -30,16 +32,18 @@ class File implements StorageInterface
     /**
      * @param CacheItemInterface $item
      * @return $this
+     * @throws \BlueCache\CacheException
+     * @throws \Psr\Cache\CacheException
      */
     public function store(CacheItemInterface $item)
     {
         $data = serialize($item);
         $key = $item->getKey();
 
-        $cacheFile = $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . '.cache';
+        $cacheFile = $this->getFilePath($key);
         $dir = $this->params['cache_path'];
 
-        if (!file_exists($dir) && !mkdir($dir) && !is_dir($dir)) {
+        if (!file_exists($dir) && !is_dir($dir)) {
             throw new CacheException('Unable to create cache directory: ' . $this->params['cache_path']);
         }
 
@@ -56,14 +60,23 @@ class File implements StorageInterface
      */
     public function restore($names)
     {
+        if (is_array($names)) {
+            return $this->processNames($names);
+        }
+
+        return $this->getItem($names);
+    }
+
+    /**
+     * @param array $names
+     * @return array
+     */
+    protected function processNames(array $names)
+    {
         $list = [];
 
-        if (is_array($names)) {
-            foreach ($names as $name) {
-                $list[$name] = $this->getItem($name);
-            }
-        } else {
-            return $this->getItem($names);
+        foreach ($names as $name) {
+            $list[$name] = $this->getItem($name);
         }
 
         return $list;
@@ -72,6 +85,7 @@ class File implements StorageInterface
     /**
      * @param array|string|null $names
      * @return $this
+     * @throws \BlueCache\CacheException
      */
     public function clear($names = null)
     {
@@ -79,7 +93,7 @@ class File implements StorageInterface
             case is_null($names):
                 $cacheDir = $this->params['cache_path'] . DIRECTORY_SEPARATOR;
 
-                return $this->clearMany(glob($cacheDir . '*.cache'), true);
+                return $this->clearMany(glob($cacheDir . '*.cache'), false);
 
             case is_array($names):
                 return $this->clearMany($names);
@@ -88,7 +102,7 @@ class File implements StorageInterface
                 return $this->delete($names);
 
             default:
-                throw new CacheException('Invalid expire type.');
+                throw new CacheException('Invalid type: ' . $names);
                 break;
         }
     }
@@ -130,16 +144,7 @@ class File implements StorageInterface
     {
         if (!isset($this->currentCache[$key])) {
             if (file_exists($this->getFilePath($key))) {
-                /** @var CacheItemInterface $item */
-                $item = unserialize(file_get_contents($this->getFilePath($key)));
-
-                if (!$item->isHit()) {
-                    $this->delete($key);
-                    return null;
-                }
-
-                $this->currentCache[$key] = $item;
-                return $item;
+                return $this->getUnserializedCacheItem($key);
             }
 
             return null;
@@ -149,17 +154,41 @@ class File implements StorageInterface
     }
 
     /**
+     * @param string $key
+     * @return null|CacheItemInterface
+     */
+    protected function getUnserializedCacheItem($key)
+    {
+        /** @var CacheItemInterface $item */
+        $item = unserialize($this->getCacheContent($key));
+
+        if (!$item->isHit()) {
+            $this->delete($key);
+            return null;
+        }
+
+        $this->currentCache[$key] = $item;
+        return $item;
+    }
+
+    /**
+     * @param string $key
+     * @return bool|string
+     */
+    protected function getCacheContent($key)
+    {
+        return file_get_contents($this->getFilePath($key));
+    }
+
+    /**
      * @param array $list
+     * @param bool $isKey
      * @return $this
      */
-    protected function clearMany(array $list, $removeExtension = false)
+    protected function clearMany(array $list, $isKey = true)
     {
         foreach ($list as $name) {
-            if ($removeExtension) {
-//                $name = rtrim($name, '\.cache');
-            }
-
-            $this->delete($name);
+            $this->delete($name, $isKey);
         }
 
         return $this;
@@ -167,17 +196,26 @@ class File implements StorageInterface
 
     /**
      * @param string $key
+     * @param bool $isKey
      * @return $this
      */
-    protected function delete($key)
+    protected function delete($key, $isKey = true)
     {
-        unlink($this->getFilePath($key));
+        if ($isKey) {
+            $key = $this->getFilePath($key);
+        }
+
+        unlink($key);
 
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @return string
+     */
     protected function getFilePath($key)
     {
-        return $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . '.cache';
+        return $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . self::CACHE_EXTENSION;
     }
 }
