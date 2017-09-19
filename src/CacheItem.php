@@ -6,7 +6,7 @@ use Psr\Cache\CacheItemInterface;
 
 class CacheItem implements CacheItemInterface
 {
-    const ALLOWED_KEY_CHARS = '#^[\w_]+$#';
+    const ALLOWED_KEY_CHARS = '#^[\w_-]+$#';
 
     /**
      * @var string
@@ -79,6 +79,10 @@ class CacheItem implements CacheItemInterface
      */
     public function isHit()
     {
+        if (is_null($this->data)) {
+            return false;
+        }
+
         if (is_null($this->expire)) {
             return true;
         }
@@ -93,6 +97,7 @@ class CacheItem implements CacheItemInterface
     public function set($value)
     {
         $this->data = $value;
+        $this->expire = null;
 
         return $this;
     }
@@ -102,7 +107,7 @@ class CacheItem implements CacheItemInterface
      * @return $this
      * @throws \BlueCache\CacheException
      */
-    public function expiresAt($expiration)
+    public function expiresAt($expiration = null)
     {
         return $this->setExpiration($expiration);
     }
@@ -116,7 +121,7 @@ class CacheItem implements CacheItemInterface
     {
         switch (true) {
             case is_null($expire):
-                $this->expire = $this->config['expire_time'] + time();
+                $this->expire = $this->config['expire'] + time();
                 break;
 
             case is_int($expire):
@@ -146,7 +151,7 @@ class CacheItem implements CacheItemInterface
      * @return $this
      * @throws \BlueCache\CacheException
      */
-    public function expiresAfter($time)
+    public function expiresAfter($time = null)
     {
         return $this->setExpiration($time);
     }
