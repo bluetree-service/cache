@@ -87,7 +87,7 @@ class CacheItem implements CacheItemInterface
             return true;
         }
 
-        return !($this->expire < time());
+        return !($this->expire <= time());
     }
 
     /**
@@ -125,7 +125,7 @@ class CacheItem implements CacheItemInterface
                 break;
 
             case is_int($expire):
-                $this->expire = $expire;
+                $this->expire = time() + $expire;
                 break;
 
             case $expire instanceof \DateTimeInterface:
