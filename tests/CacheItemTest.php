@@ -53,7 +53,11 @@ class CacheItemTest extends TestCase
         $item = (new CacheItem('test'))->set('test data');
 
         $this->assertTrue($item->isHit());
-        $item->expiresAt(2);
+        $item->expiresAt(4);
+
+        sleep(2);
+
+        $this->assertTrue($item->isHit());
 
         sleep(2);
 
@@ -74,7 +78,11 @@ class CacheItemTest extends TestCase
         $item = (new CacheItem('test'))->set('test data');
 
         $this->assertTrue($item->isHit());
-        $item->expiresAfter(5);
+        $item->expiresAfter(4);
+
+        sleep(2);
+
+        $this->assertTrue($item->isHit());
 
         sleep(2);
 
