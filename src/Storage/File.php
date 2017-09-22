@@ -33,7 +33,6 @@ class File implements StorageInterface
      * @param CacheItemInterface $item
      * @return $this
      * @throws \BlueCache\CacheException
-     * @throws \Psr\Cache\CacheException
      */
     public function store(CacheItemInterface $item)
     {
@@ -47,7 +46,7 @@ class File implements StorageInterface
             throw new CacheException('Unable to create cache directory: ' . $this->params['cache_path']);
         }
 
-        if (!file_put_contents($cacheFile, $data)) {
+        if (!@file_put_contents($cacheFile, $data)) {
             throw new CacheException('Unable to save log file: ' . $cacheFile);
         }
 

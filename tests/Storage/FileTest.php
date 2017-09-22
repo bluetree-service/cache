@@ -97,22 +97,22 @@ class FileTest extends TestCase
         $this->assertEquals($this->testMessage[1], unserialize($content)->get());
     }
 
-//    /**
-//     * @expectedException \BlueCache\CacheException
-//     */
-//    public function testWriteForIncorrectCacheFile()
-//    {
-//        $conf = [
-//            'cache_path' => $this->cachePathNoAccess
-//        ];
-//
-//        (new File($conf))->store(new CacheItem($this->testCache));
-//    }
+    /**
+     * @expectedException \BlueCache\CacheException
+     */
+    public function testWriteForIncorrectCacheFile()
+    {
+        $file = (new File($this->fileConfig))->store(new CacheItem($this->testCache));
+
+        chmod($this->fullTestFilePath, 0555);
+
+        $file->store(new CacheItem($this->testCache));
+    }
 
     public function testCacheExists()
     {
         $storage = new File($this->fileConfig);
-        $item = new CacheItem($this->testCache);
+        $item = (new CacheItem($this->testCache))->set('data');
 
         $this->assertFalse($storage->exists($this->testCache));
 
