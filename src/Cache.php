@@ -9,7 +9,6 @@
  */
 namespace BlueCache;
 
-use Exception;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\CacheItemInterface;
 
@@ -23,10 +22,13 @@ class Cache implements CacheItemPoolInterface
     /**
      * @var array
      */
+    protected $deferred = [];
+
+    /**
+     * @var array
+     */
     protected $config = [
-        'expire_time' => 86400,
-        'cache_config_time' => 1,
-        'storage_class' => '\BlueCache\Storage\File',
+        'storage_class' => \BlueCache\Storage\File::class,
         'storage_directory' => './var/cache',
     ];
 
@@ -42,6 +44,10 @@ class Cache implements CacheItemPoolInterface
         $this->registerStorage();
     }
 
+    /**
+     * @param string $name
+     * @return CacheItemInterface|null
+     */
     public function getItem($name)
     {
         if ($this->hasItem($name)) {
@@ -51,6 +57,10 @@ class Cache implements CacheItemPoolInterface
         return null;
     }
 
+    /**
+     * @param array $names
+     * @return array
+     */
     public function getItems(array $names = [])
     {
         $list = [];
@@ -62,11 +72,19 @@ class Cache implements CacheItemPoolInterface
         return $list;
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function hasItem($name)
     {
-        $this->storage->exists($name);
+        return $this->storage->exists($name);
     }
 
+    /**
+     * @return $this
+     * @throws CacheException
+     */
     public function clear()
     {
         $this->storage->clear();
@@ -74,6 +92,11 @@ class Cache implements CacheItemPoolInterface
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return $this
+     * @throws CacheException
+     */
     public function deleteItem($name)
     {
         $this->storage->clear($name);
@@ -81,6 +104,11 @@ class Cache implements CacheItemPoolInterface
         return $this;
     }
 
+    /**
+     * @param array $names
+     * @return $this
+     * @throws CacheException
+     */
     public function deleteItems(array $names)
     {
         $this->storage->clear($names);
@@ -88,28 +116,61 @@ class Cache implements CacheItemPoolInterface
         return $this;
     }
 
+    /**
+     * @param CacheItemInterface $item
+     * @return $this
+     * @throws CacheException
+     */
     public function save(CacheItemInterface $item)
     {
-        $this->storage->store(
-            $item->getKey(),
-            $item->get()
-        );
+        $this->storage->store($item);
+
+        return $this;
     }
 
+    /**
+     * Keep cache items to store it later
+     *
+     * @param CacheItemInterface $item
+     * @return $this
+     */
     public function saveDeferred(CacheItemInterface $item)
     {
-        
+        $this->deferred[] = $item;
+        return $this;
     }
 
+    /**
+     * Store all chace items added by saveDeferred
+     *
+     * @return $this
+     * @throws CacheException
+     */
     public function commit()
     {
-        
+        $cacheExceptions = [];
+
+        foreach ($this->deferred as $item) {
+            try {
+                $this->save($item);
+            } catch (CacheException $exception) {
+                $cacheExceptions[] = $exception->getMessage();
+            }
+        }
+
+        if (!empty($cacheExceptions)) {
+            throw new CacheException('Error on saving cache items: ' . implode('; ', $cacheExceptions));
+        }
+
+        $this->deferred = [];
+
+        return $this;
     }
 
     /**
      * @return $this
      */
-    private function registerStorage()
+    protected function registerStorage()
     {
         if (!$this->storage) {
             if ($this->config['storage_class']
@@ -117,10 +178,19 @@ class Cache implements CacheItemPoolInterface
             ) {
                 $this->storage = $this->config['storage_class'];
             } else {
-                $this->storage = new $this->config['storage_class'];
+                $config = ['cache_path' => $this->config['storage_directory']];
+                $this->storage = new $this->config['storage_class']($config);
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @throws CacheException
+     */
+    public function __destruct()
+    {
+        $this->commit();
     }
 }
