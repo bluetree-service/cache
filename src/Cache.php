@@ -11,11 +11,13 @@ namespace BlueCache;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\CacheItemInterface;
+use \BlueCache\Storage\StorageInterface;
+use \BlueCache\Storage\File;
 
 class Cache implements CacheItemPoolInterface
 {
     /**
-     * @var \BlueCache\Storage\StorageInterface
+     * @var StorageInterface
      */
     protected $storage;
 
@@ -28,7 +30,7 @@ class Cache implements CacheItemPoolInterface
      * @var array
      */
     protected $config = [
-        'storage_class' => \BlueCache\Storage\File::class,
+        'storage_class' => File::class,
         'storage_directory' => './var/cache',
     ];
 
@@ -36,6 +38,7 @@ class Cache implements CacheItemPoolInterface
      * check that cache directory exist and create it if not
      *
      * @param array $config
+     * @throws \BlueCache\CacheException
      */
     public function __construct(array $config = [])
     {
@@ -141,7 +144,7 @@ class Cache implements CacheItemPoolInterface
     }
 
     /**
-     * Store all chace items added by saveDeferred
+     * Store all cache items added by saveDeferred
      *
      * @return $this
      * @throws CacheException
@@ -169,17 +172,33 @@ class Cache implements CacheItemPoolInterface
 
     /**
      * @return $this
+     * @throws \BlueCache\CacheException
      */
     protected function registerStorage()
     {
         if (!$this->storage) {
-            if ($this->config['storage_class']
-                && $this->config['storage_class'] instanceof \BlueCache\Storage\StorageInterface
-            ) {
-                $this->storage = $this->config['storage_class'];
-            } else {
-                $config = ['cache_path' => $this->config['storage_directory']];
-                $this->storage = new $this->config['storage_class']($config);
+            switch (true) {
+                case $this->config['storage_class'] instanceof StorageInterface:
+                    $this->storage = $this->config['storage_class'];
+                    break;
+
+                case $this->config['storage_class'] === File::class:
+                    $config = ['cache_path' => $this->config['storage_directory']];
+                    $this->storage = new $this->config['storage_class']($config);
+                    break;
+
+                case is_string($this->config['storage_class']):
+                    $config = ['cache_path' => $this->config['storage_directory']];
+                    $this->storage = new $this->config['storage_class']($config);
+
+                    if (!($this->storage instanceof StorageInterface)) {
+                        throw new CacheException('Incorrect storage type: ' . $this->config['storage_class']);
+                    }
+                    break;
+
+                default:
+                    throw new CacheException('Incorrect storage type: ' . get_class($this->storage));
+                    break;
             }
         }
 
