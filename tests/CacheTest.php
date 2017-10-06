@@ -69,54 +69,28 @@ class CacheTest extends TestCase
 
     public function testAddItemToCache()
     {
-        $cache = new Cache([
-            'storage_directory' => $this->cachePath
-        ]);
-        $item = (new CacheItem('test'))->set('test data');
-
-        $this->assertFalse($cache->hasItem('test'));
-
-        $cache->save($item);
-
-        $this->assertTrue($cache->hasItem('test'));
+        $this->createCacheItem();
     }
 
     public function testGetItemFromCache()
     {
-        $cache = new Cache([
-            'storage_directory' => $this->cachePath
-        ]);
-        $item = (new CacheItem('test'))->set('test data');
-
-        $this->assertFalse($cache->hasItem('test'));
-
-        $cache->save($item);
-
-        $this->assertTrue($cache->hasItem('test'));
+        $cache = $this->createCacheItem();
 
         $item = $cache->getItem('test');
 
         $this->assertInstanceOf(CacheItem::class, $item);
         $this->assertEquals('test data', $item->get());
 
-        $items = $cache->getItems(['test']);
+        /** @var CacheItem $item */
+        $item = $cache->getItems(['test'])['test'];
 
-        $this->assertInstanceOf(CacheItem::class, $items['test']);
-        $this->assertEquals('test data', $items['test']->get());
+        $this->assertInstanceOf(CacheItem::class, $item);
+        $this->assertEquals('test data', $item->get());
     }
 
     public function testClearItems()
     {
-        $cache = new Cache([
-            'storage_directory' => $this->cachePath
-        ]);
-        $item = (new CacheItem('test'))->set('test data');
-
-        $this->assertFalse($cache->hasItem('test'));
-
-        $cache->save($item);
-
-        $this->assertTrue($cache->hasItem('test'));
+        $cache = $this->createCacheItem();
 
         $cache->clear();
 
@@ -125,12 +99,73 @@ class CacheTest extends TestCase
 
     public function testDeleteItems()
     {
+        $cache = $this->createCacheItem();
         
+        $cache->deleteItems(['test']);
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        $cache = $this->createCacheItem();
+        
+        $cache->deleteItem('test');
+
+        $this->assertFalse($cache->hasItem('test'));
     }
 
     public function testSaveDeferred()
     {
-        
+        $cache = new Cache([
+            'storage_directory' => $this->cachePath
+        ]);
+        $item = (new CacheItem('test'))->set('test data');
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        $cache->saveDeferred($item);
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        $cache->commit();
+
+        $this->assertTrue($cache->hasItem('test'));
+    }
+
+    public function testSaveDeferredWithDestruct()
+    {
+        $cache = new Cache([
+            'storage_directory' => $this->cachePath
+        ]);
+        $item = (new CacheItem('test'))->set('test data');
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        $cache->saveDeferred($item);
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        unset($cache);
+
+        $cache = new Cache([
+            'storage_directory' => $this->cachePath
+        ]);
+
+        $this->assertTrue($cache->hasItem('test'));
+    }
+
+    protected function createCacheItem()
+    {
+        $cache = new Cache([
+            'storage_directory' => $this->cachePath
+        ]);
+        $item = (new CacheItem('test'))->set('test data');
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        $cache->save($item);
+
+        $this->assertTrue($cache->hasItem('test'));
+
+        return $cache;
     }
 
     /**
