@@ -91,6 +91,7 @@ class File implements StorageInterface
         switch (true) {
             case is_null($names):
                 $cacheDir = $this->params['cache_path'] . DIRECTORY_SEPARATOR;
+                $this->currentCache = [];
 
                 return $this->clearMany(glob($cacheDir . '*.cache'), false);
 
@@ -201,6 +202,7 @@ class File implements StorageInterface
     protected function delete($key, $isKey = true)
     {
         if ($isKey) {
+            unset($this->currentCache[$key]);
             $key = $this->getFilePath($key);
         }
 
