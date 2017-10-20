@@ -29,12 +29,12 @@ class CacheTest extends TestCase
 
     public function testCreateCacheWithConfig()
     {
-        $items = (new Cache([
+        $items = (new Cache(
             [
                 'storage_class' => \BlueCache\Storage\File::class,
                 'storage_directory' => './var/cache',
             ]
-        ]))->getItems();
+        ))->getItems();
 
         $this->assertEmpty($items);
     }
