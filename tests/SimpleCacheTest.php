@@ -64,6 +64,37 @@ class SimpleCacheTest extends TestCase
         new SimpleCache(['storage_class' => 123123]);
     }
 
+    public function testAddDataToSimpleCache()
+    {
+        $this->createSimpleCacheItem();
+    }
+
+    protected function createSimpleCacheItem()
+    {
+        $cache = new SimpleCache([
+            'storage_directory' => $this->cachePath
+        ]);
+
+        $data = 'test data';
+
+        $this->assertFalse($cache->has('test'));
+
+        $cache->set('test', $data);
+
+        $this->assertTrue($cache->has('test'));
+
+        return $cache;
+    }
+
+    public function testGetDataFromCache()
+    {
+        $cache = $this->createSimpleCacheItem();
+
+        $this->assertEquals('test data', $cache->get('test'));
+
+//        $this->assertEquals('test data', $cache->getMultiple(['test'])['test']);
+    }
+
     /**
      * actions launched before test starts
      */
