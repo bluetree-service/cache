@@ -86,13 +86,28 @@ class SimpleCacheTest extends TestCase
         return $cache;
     }
 
+    protected function createSimpleCacheMultipleItem()
+    {
+        
+    }
+
     public function testGetDataFromCache()
     {
         $cache = $this->createSimpleCacheItem();
 
         $this->assertEquals('test data', $cache->get('test'));
 
-//        $this->assertEquals('test data', $cache->getMultiple(['test'])['test']);
+        $this->assertEquals('test data', $cache->getMultiple(['test'])['test']);
+    }
+
+    public function testClearCacheData()
+    {
+        
+    }
+
+    public function testDeleteItems()
+    {
+        
     }
 
     /**
