@@ -86,9 +86,32 @@ class SimpleCacheTest extends TestCase
         return $cache;
     }
 
-    protected function createSimpleCacheMultipleItem()
+    protected function createMultipleSimpleCacheItem()
     {
-        
+        $cache = new SimpleCache([
+            'storage_directory' => $this->cachePath
+        ]);
+
+        $data1 = 'test data';
+        $data2 = 'test data 2';
+
+        $this->assertFalse($cache->has('test1'));
+        $this->assertFalse($cache->has('test2'));
+
+        $cache->setMultiple([
+            'test1' => $data1,
+            'test2' => $data2,
+        ]);
+
+        $this->assertTrue($cache->has('test'));
+        $this->assertTrue($cache->has('test2'));
+
+        return $cache;
+    }
+
+    public function testAddMultipleDataToSimpleCache()
+    {
+        $this->createMultipleSimpleCacheItem();
     }
 
     public function testGetDataFromCache()
@@ -98,6 +121,11 @@ class SimpleCacheTest extends TestCase
         $this->assertEquals('test data', $cache->get('test'));
 
         $this->assertEquals('test data', $cache->getMultiple(['test'])['test']);
+    }
+
+    public function testGetMultipleDataFromCache()
+    {
+        $cache = $this->createMultipleSimpleCacheItem();
     }
 
     public function testClearCacheData()
