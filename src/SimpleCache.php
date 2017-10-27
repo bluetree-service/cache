@@ -27,7 +27,7 @@ class SimpleCache implements CacheInterface
     /**
      * @param string $key
      * @param mixed $value
-     * @param null $ttl
+     * @param null|int $ttl
      * @return $this
      * @throws \BlueCache\CacheException
      */
@@ -56,14 +56,35 @@ class SimpleCache implements CacheInterface
 
     }
 
+    /**
+     * @param iterable $keys
+     * @param null|mixed $default
+     * @return array
+     */
     public function getMultiple($keys, $default = null)
     {
+        $list = [];
 
+        foreach ($keys as $key) {
+            $list[$key] = $this->get($key, $default);
+        }
+
+        return $list;
     }
 
+    /**
+     * @param iterable $values
+     * @param null|int $ttl
+     * @return $this
+     * @throws \BlueCache\CacheException
+     */
     public function setMultiple($values, $ttl = null)
     {
+        foreach ($values as $key => $data) {
+            $this->set($key, $data, $ttl);
+        }
 
+        return $this;
     }
 
     public function deleteMultiple($keys)
