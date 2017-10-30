@@ -18,6 +18,8 @@ class SimpleCacheTest extends TestCase
      * @var string
      */
     protected $fullTestFilePath;
+    protected $fullTestFilePath1;
+    protected $fullTestFilePath2;
 
     public function testSimpleCacheObject()
     {
@@ -145,6 +147,8 @@ class SimpleCacheTest extends TestCase
     {
         $this->cachePath = dirname(__DIR__) . '/tests/var/cache';
         $this->fullTestFilePath = $this->cachePath . '/test.cache';
+        $this->fullTestFilePath1 = $this->cachePath . '/test1.cache';
+        $this->fullTestFilePath2 = $this->cachePath . '/test2.cache';
 
         $this->tearDown();
     }
@@ -156,6 +160,12 @@ class SimpleCacheTest extends TestCase
     {
         if (file_exists($this->fullTestFilePath)) {
             unlink($this->fullTestFilePath);
+        }
+        if (file_exists($this->fullTestFilePath1)) {
+            unlink($this->fullTestFilePath1);
+        }
+        if (file_exists($this->fullTestFilePath2)) {
+            unlink($this->fullTestFilePath2);
         }
     }
 }
