@@ -55,7 +55,7 @@ class File implements StorageInterface
 
     /**
      * @param array|string $names
-     * @return array|CacheItemInterface
+     * @return array|null|CacheItemInterface
      */
     public function restore($names)
     {
