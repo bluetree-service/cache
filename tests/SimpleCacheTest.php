@@ -158,14 +158,21 @@ class SimpleCacheTest extends TestCase
      */
     protected function tearDown()
     {
-        if (file_exists($this->fullTestFilePath)) {
-            unlink($this->fullTestFilePath);
+        $this->unlinkFile($this->fullTestFilePath)
+            ->unlinkFile($this->fullTestFilePath1)
+            ->unlinkFile($this->fullTestFilePath2);
+    }
+
+    /**
+     * @param string $path
+     * @return $this
+     */
+    protected function unlinkFile($path)
+    {
+        if (file_exists($path)) {
+            unlink($path);
         }
-        if (file_exists($this->fullTestFilePath1)) {
-            unlink($this->fullTestFilePath1);
-        }
-        if (file_exists($this->fullTestFilePath2)) {
-            unlink($this->fullTestFilePath2);
-        }
+
+        return $this;
     }
 }
