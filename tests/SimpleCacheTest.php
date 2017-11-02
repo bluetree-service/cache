@@ -105,7 +105,7 @@ class SimpleCacheTest extends TestCase
             'test2' => $data2,
         ]);
 
-        $this->assertTrue($cache->has('test'));
+        $this->assertTrue($cache->has('test1'));
         $this->assertTrue($cache->has('test2'));
 
         return $cache;
@@ -128,6 +128,11 @@ class SimpleCacheTest extends TestCase
     public function testGetMultipleDataFromCache()
     {
         $cache = $this->createMultipleSimpleCacheItem();
+
+        $cachedData = $cache->getMultiple(['test1', 'test2']);
+
+        $this->assertEquals('test data', $cachedData['test1']);
+        $this->assertEquals('test data 2', $cachedData['test2']);
     }
 
     public function testClearCacheData()
