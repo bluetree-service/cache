@@ -142,7 +142,12 @@ class SimpleCacheTest extends TestCase
 
     public function testDeleteItems()
     {
-        
+        $cache = $this->createMultipleSimpleCacheItem();
+
+        $cache->delete('test1');
+
+        $this->assertFalse($cache->has('test1'));
+        $this->assertTrue($cache->has('test2'));
     }
 
     /**
