@@ -46,9 +46,16 @@ class SimpleCache implements CacheInterface
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @return $this
+     * @throws \BlueCache\CacheException
+     */
     public function delete($key)
     {
+        $this->storage->clear($key);
 
+        return $this;
     }
 
     public function clear()
