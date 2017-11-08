@@ -137,7 +137,12 @@ class SimpleCacheTest extends TestCase
 
     public function testClearCacheData()
     {
-        
+        $cache = $this->createMultipleSimpleCacheItem();
+
+        $cache->clear();
+
+        $this->assertFalse($cache->has('test1'));
+        $this->assertFalse($cache->has('test2'));
     }
 
     public function testDeleteItems()
