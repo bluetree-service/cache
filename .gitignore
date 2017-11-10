@@ -1,3 +1,5 @@
 vendor
-tests/var
+tests/var/cache/*
+tests/var/cacheNoAccess
+!tests/var/cache/.gitkeep
 tmp
