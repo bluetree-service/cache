@@ -12,11 +12,17 @@ Bluetree PSR-6 & PSR-16 cache
 some description
 
 ### Included libraries
-* **BlueCache\** - 
+* **BlueCache\Cache** - 
+* **BlueCache\SimpleCache** - 
+* **BlueCache\CacheItem** - 
+* **BlueCache\CacheException** - 
+* **BlueCache\Common** - 
+* **BlueCache\Storage\File** - 
+* **BlueCache\Storage\StorageInterface** - 
 
 Documentation
 --------------
-* [BlueCache\](https://github.com/bluetree-service/cache/blob/develop/doc/psr-6-cache.md "PSR-6 cache")
+* [BlueCache\Cache](https://github.com/bluetree-service/cache/blob/develop/doc/psr-6-cache.md "PSR-6 cache")
 
 
 Install via Composer
