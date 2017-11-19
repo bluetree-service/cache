@@ -9,20 +9,22 @@ Bluetree PSR-6 & PSR-16 cache
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352/mini.png)](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352)
 [![Code Climate](https://codeclimate.com/github/bluetree-service/cache/badges/gpa.svg)](https://codeclimate.com/github/bluetree-service/cache)
 
-some description
+PSR-6 and/or PSR-16 cache system, based on file storage.
 
 ### Included libraries
-* **BlueCache\Cache** - 
-* **BlueCache\SimpleCache** - 
-* **BlueCache\CacheItem** - 
-* **BlueCache\CacheException** - 
-* **BlueCache\Common** - 
-* **BlueCache\Storage\File** - 
-* **BlueCache\Storage\StorageInterface** - 
+* **BlueCache\Cache** - Basic class for PSR-6 cache handling
+* **BlueCache\SimpleCache** - Basic class for PSR-16 cache handling
+* **BlueCache\CacheItem** - Cache item element for PSR-6 (used also not explicitly by SimpleCache)
+* **BlueCache\CacheException** - Exception class for all PSR-6/16 exceptions
+* **BlueCache\Common** - Common with PSR-6 and 16 methods
+* **BlueCache\Storage\File** - Allow storage cache as files on local filesystem
+* **BlueCache\Storage\StorageInterface** - Storage interface for future usage by other storage systems
 
 Documentation
 --------------
-* [BlueCache\Cache](https://github.com/bluetree-service/cache/blob/develop/doc/psr-6-cache.md "PSR-6 cache")
+* [PSR-6 cache](https://github.com/bluetree-service/cache/blob/develop/doc/psr-6-cache.md "PSR-6 cache")
+* [PSR-16 cache](https://github.com/bluetree-service/cache/blob/develop/doc/psr-16-cache.md "PSR-16 cache")
+* [File storage](https://github.com/bluetree-service/cache/blob/develop/doc/FileStorage.md "File storage")
 
 
 Install via Composer
@@ -45,11 +47,11 @@ Project description
 ### Used conventions
 
 * **Namespaces** - each library use namespaces
-* **PSR-2** - [PSR-4](http://www.php-fig.org/psr/psr-4/) coding standard
-* **PSR-4** - [PSR-4](http://www.php-fig.org/psr/psr-4/) coding standard
-* **PSR-6** - [PSR-4](http://www.php-fig.org/psr/psr-6/) 
-* **PSR-16** - [PSR-4](http://www.php-fig.org/psr/psr-16/)
-* **Composer** - [Composer](https://getcomposer.org/) 
+* **PSR-2** - [PSR-2](http://www.php-fig.org/psr/psr-2/) coding standard
+* **PSR-4** - [PSR-4](http://www.php-fig.org/psr/psr-4/) auto loading standard
+* **PSR-6** - [PSR-6](http://www.php-fig.org/psr/psr-6/) cache standard
+* **PSR-16** - [PSR-16](http://www.php-fig.org/psr/psr-16/) cache standard
+* **Composer** - [Composer](https://getcomposer.org/)
 
 ### Requirements
 
