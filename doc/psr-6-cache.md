@@ -36,14 +36,47 @@ Default expiration time is `86400` seconds.
 
 ## Create Cache instance
 
-To store Cache Items we need to create `Cache` instance.
+To store Cache Items we need to create `Cache` instance. To create instance with
+default config just use:
+
+```php
+$cache = new Cache;
+```
+
+Cache object constructor can accept one variable that is configuration array.
+That configuration can set default storage path and some different storage object.
 
 ### Configuration
 
-'storage_class' => File::class,
-'storage_directory' => './var/cache',
+* **storage_class** - Value can be string with full namespace of class or some existing object. All of them must be instances of `StorageInterface`. By default its `File::class`
+* **storage_directory** - Optional (for file system storage) path to storage directory. By default its: `./var/cache`
+
+```php
+$cache = new Cache([
+    'storage_class' => '\Some\Class'
+    'storage_directory' => 'some/path'
+]);
+```
 
 ### Public methods
 
+* **getItem** - Return `CacheItem` or `null`. Require string with cache item key name
+* **getItems** - Return array of`CacheItem`s or empty array. Require array with cache item key names. If one of items don't exists, will return `null` for its key name
+* **hasItem** - Return boolean information that Cache Item exists. Require string with cache item key name
+* **clear** - Remove all Cache items
+* **deleteItem** - Remove Cache Item by given key name
+* **deleteItems** - Allow to remove list of Cache Items. Accept array of key names
+* **save** - Save Cache Item into selected storage engine. Accept instance of `CacheItemInterface`
+* **saveDeferred** - Add Cache Item into que, and save in storage engine only if `Cache` object was destructed or manually method `commit` was executed.
+* **commit** - Save all stored in `Cache` Cache Items added by `saveDeferred` in storage engine
+
 ## Exceptions
 
+All throwed exceptions are type of `CacheExceptionInterface`.
+
+Possible exception can be caused by:
+
+* Invalid key name for Cache Item. Should us only chars, numbers and _.
+* Invalid expire type for Cache Item
+* Incorrect storage type, must be instance of `StorageInterface`
+* Error on saving cache items after `commit` execution
