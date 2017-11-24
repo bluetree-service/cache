@@ -155,6 +155,36 @@ class SimpleCacheTest extends TestCase
         $this->assertTrue($cache->has('test2'));
     }
 
+    public function testDeleteMultipleItems()
+    {
+        $cache = $this->createMultipleSimpleCacheItem();
+
+        $cache->deleteMultiple(['test1']);
+
+        $this->assertFalse($cache->has('test1'));
+        $this->assertTrue($cache->has('test2'));
+    }
+
+    public function testSetDataWithExpirationTime()
+    {
+        $cache = new SimpleCache([
+            'storage_directory' => $this->cachePath
+        ]);
+
+        $data = 'test data';
+
+        $this->assertFalse($cache->has('test'));
+
+        $cache->set('test', $data, 4);
+        sleep(2);
+
+        $this->assertTrue($cache->has('test'));
+
+        sleep(2);
+
+        $this->assertFalse($cache->has('test'));
+    }
+
     /**
      * actions launched before test starts
      */

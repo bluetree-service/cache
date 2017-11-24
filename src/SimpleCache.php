@@ -27,19 +27,17 @@ class SimpleCache implements CacheInterface
     /**
      * @param string $key
      * @param mixed $value
-     * @param null|int $ttl
+     * @param \DateTimeInterface|\DateInterval|null|int $ttl
      * @return $this
      * @throws \BlueCache\CacheException
      */
     public function set($key, $value, $ttl = null)
     {
-        $config = [];
+        $item = (new CacheItem($key))->set($value);
 
         if (!is_null($ttl)) {
-            $config['expire'] = $ttl;
+            $item->expiresAfter($ttl);
         }
-
-        $item = (new CacheItem($key, $config))->set($value);
 
         $this->storage->store($item);
 
@@ -100,9 +98,18 @@ class SimpleCache implements CacheInterface
         return $this;
     }
 
+    /**
+     * @param iterable $keys
+     * @return $this
+     * @throws \BlueCache\CacheException
+     */
     public function deleteMultiple($keys)
     {
+        foreach ($keys as $key) {
+            $this->delete($key);
+        }
 
+        return $this;
     }
 
     /**
