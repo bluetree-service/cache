@@ -35,7 +35,7 @@ $cache = new SimpleCache([
 * **getMultiple** - Return values for given as first parameter keys (array of keys). Second optional parameter (default value) works the same as default in `get` method
 * **setMultiple** - Allow to set array of pair key => value. Second parameter is expiration time
 * **deleteMultiple** - Remove all cache elements given in array keys
-* **has** - 
+* **has** - Return boolean information that cache element exists
 
 ## Exceptions
 
@@ -43,7 +43,9 @@ All throwed exceptions are type of `CacheExceptionInterface`.
 
 Possible exception can be caused by:
 
-* 
+* Incorrect storage type, must be instance of `StorageInterface`
+* Invalid expire type for Cache Item
+* Invalid key name for Cache Item. Should us only chars, numbers and _.
 
 IMPORTANT
 
