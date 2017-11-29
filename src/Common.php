@@ -45,30 +45,39 @@ trait Common
      */
     protected function registerStorage()
     {
-        if (!$this->storage) {
-            switch (true) {
-                case $this->config['storage_class'] instanceof StorageInterface:
-                    $this->storage = $this->config['storage_class'];
-                    break;
+        if ($this->storage) {
+            return $this;
+        }
 
-                case $this->config['storage_class'] === File::class:
-                    $config = ['cache_path' => $this->config['storage_directory']];
-                    $this->storage = new $this->config['storage_class']($config);
-                    break;
+        switch (true) {
+            case $this->config['storage_class'] instanceof StorageInterface:
+                $this->storage = $this->config['storage_class'];
+                break;
 
-                case is_string($this->config['storage_class']):
-                    $config = ['cache_path' => $this->config['storage_directory']];
-                    $this->storage = new $this->config['storage_class']($config);
+            case $this->config['storage_class'] === File::class:
+            case is_string($this->config['storage_class']):
+                $this->factoryStorage();
+                break;
 
-                    if (!($this->storage instanceof StorageInterface)) {
-                        throw new CacheException('Incorrect storage type: ' . $this->config['storage_class']);
-                    }
-                    break;
+            default:
+                throw new CacheException('Incorrect storage type: ' . get_class($this->storage));
+                break;
+        }
 
-                default:
-                    throw new CacheException('Incorrect storage type: ' . get_class($this->storage));
-                    break;
-            }
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws \BlueCache\CacheException
+     */
+    protected function factoryStorage()
+    {
+        $config = ['cache_path' => $this->config['storage_directory']];
+        $this->storage = new $this->config['storage_class']($config);
+
+        if (!($this->storage instanceof StorageInterface)) {
+            throw new CacheException('Incorrect storage type: ' . $this->config['storage_class']);
         }
 
         return $this;
