@@ -140,7 +140,6 @@ class CacheItem implements CacheItemInterface
 
             default:
                 throw new CacheException('Invalid expire type.');
-                break;
         }
 
         return $this;
