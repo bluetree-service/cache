@@ -61,7 +61,6 @@ trait Common
 
             default:
                 throw new CacheException('Incorrect storage type: ' . get_class($this->storage));
-                break;
         }
 
         return $this;
