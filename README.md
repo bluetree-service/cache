@@ -5,7 +5,7 @@ Bluetree PSR-6 & PSR-16 cache
 [![Latest Stable Version](https://poser.pugx.org/bluetree-service/cache/v/stable.svg)](https://packagist.org/packages/bluetree-service/cache)
 [![Total Downloads](https://poser.pugx.org/bluetree-service/cache/downloads.svg)](https://packagist.org/packages/bluetree-service/cache)
 [![License](https://poser.pugx.org/bluetree-service/cache/license.svg)](https://packagist.org/packages/bluetree-service/cache)
-[![Coverage Status](https://coveralls.io/repos/bluetree-service/cache/badge.svg)](https://coveralls.io/r/bluetree-service/cache)
+[![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352/mini.png)](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352)
 [![Code Climate](https://codeclimate.com/github/bluetree-service/cache/badges/gpa.svg)](https://codeclimate.com/github/bluetree-service/cache)
 
