@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 * Scrutinizer support
 ### Changed
-* Added whitelist for coverage report generationg
+* Added whitelist for coverage report generation
 
 ## 0.2.1.0 - 2017-12-01
 ### Changed
