@@ -136,6 +136,23 @@ class FileTest extends TestCase
         $this->assertEquals($this->testMessage[0], $content->get());
     }
 
+    public function testRestoreCacheAfterExpiration()
+    {
+        $this->assertFileNotExists($this->fullTestFilePath);
+        $item = new CacheItem($this->testCache);
+        $item->expiresAfter(1);
+
+        $storage = (new File($this->fileConfig))->store($item);
+
+        $this->assertFileExists($this->fullTestFilePath);
+
+        sleep(1);
+
+        $content = $storage->exists($this->testCache);
+
+        $this->assertFalse($content);
+    }
+
     public function testRestoreManyCache()
     {
         $contents = $this->createCacheFiles();
@@ -145,6 +162,13 @@ class FileTest extends TestCase
 
         $this->assertInstanceOf(CacheItem::class, $contents['test_cache_2']);
         $this->assertEquals($this->testMessage[1], $contents['test_cache_2']->get());
+    }
+
+    public function testRestoreNotExisting()
+    {
+        $content = (new File($this->fileConfig))->restore($this->testCache);
+
+        $this->assertNull($content);
     }
 
     protected function createCacheFiles()
