@@ -9,6 +9,9 @@ Bluetree PSR-6 & PSR-16 cache
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352/mini.png)](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352)
 [![Code Climate](https://codeclimate.com/github/bluetree-service/cache/badges/gpa.svg)](https://codeclimate.com/github/bluetree-service/cache)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/build.png?b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/build-status/master)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 
 PSR-6 and/or PSR-16 cache system, based on file storage.
 
