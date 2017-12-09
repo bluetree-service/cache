@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.2.1.1 - 2017-12-09
+### Added
+* Scrutinizer support
+### Changed
+* Added whitelist for coverage report generationg
+
 ## 0.2.1.0 - 2017-12-01
 ### Changed
 * Moved roave/security-advisories lib into require once
