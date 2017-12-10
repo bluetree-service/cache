@@ -15,7 +15,7 @@ interface StorageInterface
 
     /**
      * @param CacheItemInterface $item
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function store(CacheItemInterface $item);
@@ -34,7 +34,7 @@ interface StorageInterface
 
     /**
      * @param string|null $name
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function clear($name = null);

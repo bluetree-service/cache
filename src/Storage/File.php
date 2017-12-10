@@ -31,7 +31,7 @@ class File implements StorageInterface
 
     /**
      * @param CacheItemInterface $item
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function store(CacheItemInterface $item)
@@ -50,7 +50,7 @@ class File implements StorageInterface
             throw new CacheException('Unable to save log file: ' . $cacheFile);
         }
 
-        return $this;
+        return true;
     }
 
     /**
@@ -59,7 +59,7 @@ class File implements StorageInterface
      */
     public function restore($names)
     {
-        if (is_array($names)) {
+        if (\is_array($names)) {
             return $this->processNames($names);
         }
 
@@ -83,22 +83,22 @@ class File implements StorageInterface
 
     /**
      * @param array|string|null $names
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function clear($names = null)
     {
         switch (true) {
-            case is_null($names):
+            case \is_null($names):
                 $cacheDir = $this->params['cache_path'] . DIRECTORY_SEPARATOR;
                 $this->currentCache = [];
 
                 return $this->clearMany(glob($cacheDir . '*.cache'), false);
 
-            case is_array($names):
+            case \is_array($names):
                 return $this->clearMany($names);
 
-            case is_string($names):
+            case \is_string($names):
                 return $this->delete($names);
 
             default:
@@ -116,7 +116,7 @@ class File implements StorageInterface
         /** @var CacheItemInterface|null $item */
         $item = $this->getCacheItem($key);
 
-        if (is_null($item)) {
+        if (\is_null($item)) {
             return false;
         }
 
@@ -183,21 +183,27 @@ class File implements StorageInterface
     /**
      * @param array $list
      * @param bool $isKey
-     * @return $this
+     * @return bool
      */
     protected function clearMany(array $list, $isKey = true)
     {
+        $flag = true;
+
         foreach ($list as $name) {
-            $this->delete($name, $isKey);
+            $deleted = $this->delete($name, $isKey);
+
+            if (!$deleted) {
+                $flag = false;
+            }
         }
 
-        return $this;
+        return $flag;
     }
 
     /**
      * @param string $key
      * @param bool $isKey
-     * @return $this
+     * @return bool
      */
     protected function delete($key, $isKey = true)
     {
@@ -206,9 +212,7 @@ class File implements StorageInterface
             $key = $this->getFilePath($key);
         }
 
-        unlink($key);
-
-        return $this;
+        return unlink($key);
     }
 
     /**
