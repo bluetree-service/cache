@@ -22,8 +22,13 @@ class Cache implements CacheItemPoolInterface
     protected $deferred = [];
 
     /**
+     * @var array
+     */
+    protected $cacheCommitExceptions = [];
+
+    /**
      * @param string $name
-     * @return CacheItemInterface|null
+     * @return null|CacheItemInterface
      */
     public function getItem($name)
     {
@@ -59,89 +64,96 @@ class Cache implements CacheItemPoolInterface
     }
 
     /**
-     * @return $this
+     * @return bool
      * @throws CacheException
      */
     public function clear()
     {
-        $this->storage->clear();
-
-        return $this;
+        return $this->storage->clear();
     }
 
     /**
      * @param string $name
-     * @return $this
+     * @return bool
      * @throws CacheException
      */
     public function deleteItem($name)
     {
-        $this->storage->clear($name);
-
-        return $this;
+        return $this->storage->clear($name);
     }
 
     /**
      * @param array $names
-     * @return $this
+     * @return bool
      * @throws CacheException
      */
     public function deleteItems(array $names)
     {
-        $this->storage->clear($names);
-
-        return $this;
+        return $this->storage->clear($names);
     }
 
     /**
      * @param CacheItemInterface $item
-     * @return $this
+     * @return bool
      * @throws CacheException
      */
     public function save(CacheItemInterface $item)
     {
-        $this->storage->store($item);
-
-        return $this;
+        return $this->storage->store($item);
     }
 
     /**
      * Keep cache items to store it later
      *
      * @param CacheItemInterface $item
-     * @return $this
+     * @return bool
      */
     public function saveDeferred(CacheItemInterface $item)
     {
         $this->deferred[] = $item;
-        return $this;
+        return true;
     }
 
     /**
      * Store all cache items added by saveDeferred
      *
-     * @return $this
+     * @return bool
      * @throws CacheException
      */
     public function commit()
     {
         $cacheExceptions = [];
+        $this->cacheCommitExceptions = [];
+        $flag = true;
 
         foreach ($this->deferred as $item) {
-            try {
-                $this->save($item);
-            } catch (CacheException $exception) {
-                $cacheExceptions[] = $exception->getMessage();
+            if (!$this->commitSave($item)) {
+                $flag = false;
             }
         }
 
-        if (!empty($cacheExceptions)) {
+        if (!empty($this->cacheCommitExceptions)) {
             throw new CacheException('Error on saving cache items: ' . implode('; ', $cacheExceptions));
         }
 
         $this->deferred = [];
 
-        return $this;
+        return $flag;
+    }
+
+    /**
+     * @param CacheItemInterface $item
+     * @return bool
+     */
+    protected function commitSave(CacheItemInterface $item)
+    {
+        try {
+            return $this->save($item);
+        } catch (CacheException $exception) {
+            $this->cacheCommitExceptions[] = $exception->getMessage();
+
+            return false;
+        }
     }
 
     /**

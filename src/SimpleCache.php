@@ -17,7 +17,7 @@ class SimpleCache implements CacheInterface
     {
         $cacheItem = $this->storage->restore($key);
 
-        if (is_null($cacheItem)) {
+        if (\is_null($cacheItem)) {
             return $default;
         }
 
@@ -28,43 +28,37 @@ class SimpleCache implements CacheInterface
      * @param string $key
      * @param mixed $value
      * @param \DateTimeInterface|\DateInterval|null|int $ttl
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function set($key, $value, $ttl = null)
     {
         $item = (new CacheItem($key))->set($value);
 
-        if (!is_null($ttl)) {
+        if (!\is_null($ttl)) {
             $item->expiresAfter($ttl);
         }
 
-        $this->storage->store($item);
-
-        return $this;
+        return $this->storage->store($item);
     }
 
     /**
      * @param string $key
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function delete($key)
     {
-        $this->storage->clear($key);
-
-        return $this;
+        return $this->storage->clear($key);
     }
 
     /**
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function clear()
     {
-        $this->storage->clear();
-
-        return $this;
+        return $this->storage->clear();
     }
 
     /**
@@ -86,30 +80,42 @@ class SimpleCache implements CacheInterface
     /**
      * @param iterable $values
      * @param null|int $ttl
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function setMultiple($values, $ttl = null)
     {
+        $flag = true;
+
         foreach ($values as $key => $data) {
-            $this->set($key, $data, $ttl);
+            $isSet = $this->set($key, $data, $ttl);
+
+            if (!$isSet) {
+                $flag = false;
+            }
         }
 
-        return $this;
+        return $flag;
     }
 
     /**
      * @param iterable $keys
-     * @return $this
+     * @return bool
      * @throws \BlueCache\CacheException
      */
     public function deleteMultiple($keys)
     {
+        $flag = true;
+
         foreach ($keys as $key) {
-            $this->delete($key);
+            $deleted = $this->delete($key);
+
+            if (!$deleted) {
+                $flag = false;
+            }
         }
 
-        return $this;
+        return $flag;
     }
 
     /**

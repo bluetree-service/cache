@@ -102,7 +102,8 @@ class FileTest extends TestCase
      */
     public function testWriteForIncorrectCacheFile()
     {
-        $file = (new File($this->fileConfig))->store(new CacheItem($this->testCache));
+        $file = new File($this->fileConfig);
+        $file->store(new CacheItem($this->testCache));
 
         chmod($this->fullTestFilePath, 0555);
 
@@ -142,7 +143,8 @@ class FileTest extends TestCase
         $item = new CacheItem($this->testCache);
         $item->expiresAfter(1);
 
-        $storage = (new File($this->fileConfig))->store($item);
+        $storage = new File($this->fileConfig);
+        $storage->store($item);
 
         $this->assertFileExists($this->fullTestFilePath);
 
