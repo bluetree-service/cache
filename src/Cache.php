@@ -85,11 +85,10 @@ class Cache implements CacheItemPoolInterface
     /**
      * @param array $names
      * @return bool
-     * @throws CacheException
      */
     public function deleteItems(array $names)
     {
-        return $this->storage->clear($names);
+        return $this->storage->clearMany($names);
     }
 
     /**
