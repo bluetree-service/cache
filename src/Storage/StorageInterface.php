@@ -33,9 +33,16 @@ interface StorageInterface
     public function exists($name);
 
     /**
-     * @param string|null $name
+     * @param string|null|array $name
      * @return bool
      * @throws \BlueCache\CacheException
      */
     public function clear($name = null);
+
+    /**
+     * @param array $list
+     * @param bool $isKey
+     * @return bool
+     */
+    public function clearMany(array $list, $isKey = true);
 }

@@ -82,7 +82,7 @@ class File implements StorageInterface
     }
 
     /**
-     * @param array|string|null $names
+     * @param string|null $names
      * @return bool
      * @throws \BlueCache\CacheException
      */
@@ -94,9 +94,6 @@ class File implements StorageInterface
                 $this->currentCache = [];
 
                 return $this->clearMany(glob($cacheDir . '*.cache'), false);
-
-            case \is_array($names):
-                return $this->clearMany($names);
 
             case \is_string($names):
                 return $this->delete($names);
@@ -185,7 +182,7 @@ class File implements StorageInterface
      * @param bool $isKey
      * @return bool
      */
-    protected function clearMany(array $list, $isKey = true)
+    public function clearMany(array $list, $isKey = true)
     {
         $flag = true;
 
@@ -212,7 +209,7 @@ class File implements StorageInterface
             $key = $this->getFilePath($key);
         }
 
-        return unlink($key);
+        return @unlink($key);
     }
 
     /**

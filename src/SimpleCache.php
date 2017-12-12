@@ -101,21 +101,10 @@ class SimpleCache implements CacheInterface
     /**
      * @param iterable $keys
      * @return bool
-     * @throws \BlueCache\CacheException
      */
     public function deleteMultiple($keys)
     {
-        $flag = true;
-
-        foreach ($keys as $key) {
-            $deleted = $this->delete($key);
-
-            if (!$deleted) {
-                $flag = false;
-            }
-        }
-
-        return $flag;
+        return $this->storage->clearMany($keys);
     }
 
     /**

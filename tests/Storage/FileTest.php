@@ -203,9 +203,6 @@ class FileTest extends TestCase
         $storage->clear($this->testCache2);
 
         $this->createCacheFiles();
-        $storage->clear([$this->testCache, $this->testCache2]);
-
-        $this->createCacheFiles();
         $storage->clear();
 
         $this->assertFileNotExists($this->fullTestFilePath);
@@ -222,6 +219,29 @@ class FileTest extends TestCase
         $storage = new File($this->fileConfig);
 
         $storage->clear(2134);
+    }
+
+    public function testClearMany()
+    {
+        $this->createCacheFiles();
+        $storage = new File($this->fileConfig);
+
+        $isDeleted = $storage->clearMany([$this->testCache, $this->testCache2]);
+
+        $this->assertTrue($isDeleted);
+        $this->assertFileNotExists($this->fullTestFilePath);
+        $this->assertFileNotExists($this->fullTestFilePath2);
+    }
+
+    public function testClearManyWithError()
+    {
+        $this->createCacheFiles();
+        $storage = new File($this->fileConfig);
+
+        $isDeleted = $storage->clearMany(['non_existing_key', $this->testCache]);
+
+        $this->assertFalse($isDeleted);
+        $this->assertFileNotExists($this->fullTestFilePath);
     }
 
     /**
