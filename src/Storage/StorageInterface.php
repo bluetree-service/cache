@@ -40,7 +40,7 @@ interface StorageInterface
     public function clear($name = null);
 
     /**
-     * @param array $list
+     * @param iterable|array $list
      * @param bool $isKey
      * @return bool
      */

@@ -45,10 +45,6 @@ trait Common
      */
     protected function registerStorage()
     {
-        if ($this->storage) {
-            return $this;
-        }
-
         switch (true) {
             case $this->config['storage_class'] instanceof StorageInterface:
                 $this->storage = $this->config['storage_class'];

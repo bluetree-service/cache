@@ -125,6 +125,15 @@ class SimpleCacheTest extends TestCase
         $this->assertEquals('test data', $cache->getMultiple(['test'])['test']);
     }
 
+    public function testGetDefaultDataFromCache()
+    {
+        $cache = $this->createSimpleCacheItem();
+
+        $this->assertFalse($cache->get('test_default', false));
+
+        $this->assertEquals(['test_default' => false], $cache->getMultiple(['test_default'], false));
+    }
+
     public function testGetMultipleDataFromCache()
     {
         $cache = $this->createMultipleSimpleCacheItem();
