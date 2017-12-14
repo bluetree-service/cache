@@ -88,6 +88,13 @@ class CacheTest extends TestCase
         $this->assertEquals('test data', $item->get());
     }
 
+    public function testGetNoneExistItem()
+    {
+        $cache = $this->createCacheItem();
+
+        $this->assertNull($cache->getItem('none_existing'));
+    }
+
     public function testClearItems()
     {
         $cache = $this->createCacheItem();
@@ -128,6 +135,27 @@ class CacheTest extends TestCase
         $cache->commit();
 
         $this->assertTrue($cache->hasItem('test'));
+    }
+
+    /**
+     * @expectedException \BlueCache\CacheException
+     */
+    public function testSaveDeferredWithError()
+    {
+        $cache = new Cache([
+            'storage_directory' => $this->cachePath
+        ]);
+        $item = (new CacheItem('test'))->set('test data');
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        $cache->saveDeferred($item);
+
+        $this->assertFalse($cache->hasItem('test'));
+
+        chmod($this->cachePath, 0555);
+
+        $cache->commit();
     }
 
     public function testSaveDeferredWithDestruct()
@@ -184,6 +212,8 @@ class CacheTest extends TestCase
      */
     protected function tearDown()
     {
+        chmod($this->cachePath, 0777);
+
         if (file_exists($this->fullTestFilePath)) {
             unlink($this->fullTestFilePath);
         }

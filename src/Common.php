@@ -34,7 +34,7 @@ trait Common
      */
     public function __construct(array $config = [])
     {
-        $this->config = array_merge($this->config, $config);
+        $this->config = \array_merge($this->config, $config);
 
         $this->registerStorage();
     }
@@ -51,12 +51,12 @@ trait Common
                 break;
 
             case $this->config['storage_class'] === File::class:
-            case is_string($this->config['storage_class']):
+            case \is_string($this->config['storage_class']):
                 $this->factoryStorage();
                 break;
 
             default:
-                throw new CacheException('Incorrect storage type: ' . get_class($this->storage));
+                throw new CacheException('Incorrect storage type: ' . \get_class($this->storage));
         }
 
         return $this;

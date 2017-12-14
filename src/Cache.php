@@ -121,7 +121,6 @@ class Cache implements CacheItemPoolInterface
      */
     public function commit()
     {
-        $cacheExceptions = [];
         $this->cacheCommitExceptions = [];
         $flag = true;
 
@@ -132,7 +131,9 @@ class Cache implements CacheItemPoolInterface
         }
 
         if (!empty($this->cacheCommitExceptions)) {
-            throw new CacheException('Error on saving cache items: ' . implode('; ', $cacheExceptions));
+            throw new CacheException(
+                'Error on saving cache items: ' . implode('; ', $this->cacheCommitExceptions)
+            );
         }
 
         $this->deferred = [];
