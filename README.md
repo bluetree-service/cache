@@ -1,17 +1,25 @@
 Bluetree PSR-6 & PSR-16 cache
 =============================
 
-[![Build Status](https://travis-ci.org/bluetree-service/cache.svg)](https://travis-ci.org/bluetree-service/cache)
-[![Latest Stable Version](https://poser.pugx.org/bluetree-service/cache/v/stable.svg)](https://packagist.org/packages/bluetree-service/cache)
-[![Total Downloads](https://poser.pugx.org/bluetree-service/cache/downloads.svg)](https://packagist.org/packages/bluetree-service/cache)
-[![License](https://poser.pugx.org/bluetree-service/cache/license.svg)](https://packagist.org/packages/bluetree-service/cache)
-[![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352/mini.png)](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352)
-[![Code Climate](https://codeclimate.com/github/bluetree-service/cache/badges/gpa.svg)](https://codeclimate.com/github/bluetree-service/cache)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/build.png?b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/build-status/master)
-[![Code Intelligence Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
+[![Latest Stable Version](https://poser.pugx.org/bluetree-service/cache/v/stable.svg?style=flat-square)](https://packagist.org/packages/bluetree-service/cache)
+[![Total Downloads](https://poser.pugx.org/bluetree-service/cache/downloads.svg?style=flat-square)](https://packagist.org/packages/bluetree-service/cache)
+[![License](https://poser.pugx.org/bluetree-service/cache/license.svg?style=flat-square)](https://packagist.org/packages/bluetree-service/cache)
+
+##### Builds
+| Travis | Scrutinizer |
+|:---:|:---:|
+| [![Build Status](https://travis-ci.org/bluetree-service/cache.svg?style=flat-square)](https://travis-ci.org/bluetree-service/cache) | [![Build Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/build.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/build-status/master) |
+
+##### Coverage
+| Coveralls | Scrutinizer |
+|:---:|:---:|
+| [![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master) | [![Code Coverage](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/coverage.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master) |
+
+##### Quality
+| Code Climate | Scrutinizer | Sensio Labs |
+|:---:|:---:|:---:|
+| [![Code Climate](https://codeclimate.com/github/bluetree-service/cache/badges/gpa.svg?style=flat-square)](https://codeclimate.com/github/bluetree-service/cache) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/quality-score.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master) | [![SensioLabsInsight](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352/mini.png?style=flat-square)](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352) |
+|  | [![Code Intelligence Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/code-intelligence.svg?style=flat-square&b=master)](https://scrutinizer-ci.com/code-intelligence) |  |
 
 PSR-6 and/or PSR-16 cache system, based on file storage.
 
