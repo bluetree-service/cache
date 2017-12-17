@@ -9,6 +9,11 @@ class SimpleCache implements CacheInterface
     use Common;
 
     /**
+     * @var array
+     */
+    protected $multipleSetExceptions = [];
+
+    /**
      * @param string $key
      * @param mixed $default
      * @return array|null|\Psr\Cache\CacheItemInterface
@@ -81,17 +86,17 @@ class SimpleCache implements CacheInterface
      * @param iterable $values
      * @param null|int $ttl
      * @return bool
-     * @throws \BlueCache\CacheException
      */
     public function setMultiple($values, $ttl = null)
     {
         $flag = true;
 
         foreach ($values as $key => $data) {
-            $isSet = $this->set($key, $data, $ttl);
-
-            if (!$isSet) {
+            try {
+                $this->set($key, $data, $ttl);
+            } catch (CacheException $exception) {
                 $flag = false;
+                $this->multipleSetExceptions[$key] = $exception->getMessage();
             }
         }
 
@@ -114,5 +119,13 @@ class SimpleCache implements CacheInterface
     public function has($key)
     {
         return $this->storage->exists($key);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMultipleSetExceptions()
+    {
+        return $this->multipleSetExceptions;
     }
 }
