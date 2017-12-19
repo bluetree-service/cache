@@ -111,6 +111,41 @@ class SimpleCacheTest extends TestCase
         return $cache;
     }
 
+    public function testCreateMultipleSimpleCacheItemWithError()
+    {
+        $cache = new SimpleCache([
+            'storage_directory' => $this->cachePath
+        ]);
+
+        $data1 = 'test data';
+        $data2 = 'test data 2';
+
+        $this->assertFalse($cache->has('test1'));
+        $this->assertFalse($cache->has('test2'));
+
+        chmod($this->cachePath, 0555);
+
+        $bool = $cache->setMultiple([
+            'test1' => $data1,
+            'test2' => $data2,
+        ]);
+
+        chmod($this->cachePath, 0777);
+
+        $this->assertFalse($bool);
+        $this->assertArrayHasKey('test1', $cache->getMultipleSetExceptions());
+        $this->assertArrayHasKey('test2', $cache->getMultipleSetExceptions());
+
+        $this->assertRegExp(
+            '#Unable to save log file: .*tests\/var\/cache\/test1\.cache#',
+            $cache->getMultipleSetExceptions()['test1']
+        );
+        $this->assertRegExp(
+            '#Unable to save log file: .*tests\/var\/cache\/test2\.cache#',
+            $cache->getMultipleSetExceptions()['test2']
+        );
+    }
+
     public function testAddMultipleDataToSimpleCache()
     {
         $this->createMultipleSimpleCacheItem();
