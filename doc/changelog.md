@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.3.0.0 - 2017-12-20
+### Changed
+* Fixed some method return types to be compatible with PSR
+* Performance improvements
+* Some small refactor
+* Small API changes
+* Code coverage improvement
+
 ## 0.2.1.1 - 2017-12-09
 ### Added
 * Scrutinizer support

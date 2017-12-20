@@ -27,7 +27,8 @@ Possible exception can be caused by:
 ## List of public methods
 
 * **__construct** - Create storage object, get array of parameters. For now only one is supported `cache_path` that point into cache storage directory.
-* **clear** - Clear one or more cache elements. Parameters is *string* key name to remove single, *array* of keys to remove or `null` to all.
+* **clear** - Clear one cache elements. Parameters is *string* key name to remove single or `null` to remove all.
+* **clearMany** - Allow to remove list of given cache elements. First param is list of keys, second if set to false try to remove directly given element from cache directory.
 * **exists** - Return boolean information that cache element exists, as parameter takes key name of cache element.
 * **restore** - Restore single or many cache elements. As parameter takes key name or *array* of keys.
 * **store** - Save in cache directory single cache element. As parameter takes `CacheItemInterface` instance.

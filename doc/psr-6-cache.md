@@ -28,7 +28,7 @@ Default expiration time is `86400` seconds.
 * **expiresAfter** - Allow to set expiration after some given time. Accept `DateInterval` ,`int` or `null`. If its `null` then will use expiration from configuration, `int` value will be added into current time.
 * **expiresAt** - Allow to set cache item expiration on specified date. Accept `DateTimeInterface` or `null`. If is `null` then will use expiration from configuration.
 * **get** - Get stored in cache item data, or `null` if there is no data, or cache item was expired
-* **getKey** - Return cache item cache key value
+* **getKey** - Return cache item key value
 * **isHit** - Return boolean information that cache item is still exists
 * **set** - Store in cache item given as parameter mixed data
 
@@ -63,12 +63,12 @@ $cache = new Cache([
 * **getItem** - Return `CacheItem` or `null`. Require string with cache item key name
 * **getItems** - Return array of`CacheItem`s or empty array. Require array with cache item key names. If one of items don't exists, will return `null` for its key name
 * **hasItem** - Return boolean information that Cache Item exists. Require string with cache item key name
-* **clear** - Remove all Cache items
-* **deleteItem** - Remove Cache Item by given key name
-* **deleteItems** - Allow to remove list of Cache Items. Accept array of key names
-* **save** - Save Cache Item into selected storage engine. Accept instance of `CacheItemInterface`
+* **clear** - Remove all Cache items, return `true` if item was removed
+* **deleteItem** - Remove Cache Item by given key name, return `true` if item was removed
+* **deleteItems** - Allow to remove list of Cache Items. Accept array of key names, return `true` if items was removed
+* **save** - Save Cache Item into selected storage engine. Accept instance of `CacheItemInterface`, return `true` if item was saved
 * **saveDeferred** - Add Cache Item into que, and save in storage engine only if `Cache` object was destructed or manually method `commit` was executed.
-* **commit** - Save all stored in `Cache` Cache Items added by `saveDeferred` in storage engine
+* **commit** - Save all stored in `Cache` Cache Items added by `saveDeferred` in storage engine, return `true` if items was saved
 
 ## Exceptions
 
@@ -80,3 +80,4 @@ Possible exception can be caused by:
 * Invalid expire type for Cache Item
 * Incorrect storage type, must be instance of `StorageInterface`
 * Error on saving cache items after `commit` execution
+* Some of cache items was not saved during object destruction or when `commit` method was executed

@@ -29,13 +29,14 @@ $cache = new SimpleCache([
 ### Public methods
 
 * **get** - Return value of stored by given key data. As second optional parameter store value that will be returned if key was nod founded (by default its `null`).
-* **set** - Set data in Cache by given key. Require key name as first parameter and data as second. Third parameter is expiration time (\DateTimeInterface|\DateInterval|null|int)
-* **delete** - Return boolean information that Cache Item exists. Require string with cache item key name
-* **clear** - Remove all Cache items
+* **set** - Set data in Cache by given key. Require key name as first parameter and data as second. Third parameter is expiration time (\DateTimeInterface|\DateInterval|null|int). Return `true` if everything was ok
+* **delete** - Return boolean information that Cache Item exists. Require string with cache item key name. Return `true` if everything was ok
+* **clear** - Remove all Cache items. Return `true` if everything was ok
 * **getMultiple** - Return values for given as first parameter keys (array of keys). Second optional parameter (default value) works the same as default in `get` method
-* **setMultiple** - Allow to set array of pair key => value. Second parameter is expiration time
-* **deleteMultiple** - Remove all cache elements given in array keys
+* **setMultiple** - Allow to set array of pair key => value. Second parameter is expiration time. Return `true` if everything was ok
+* **deleteMultiple** - Remove all cache elements given in array keys. Return `true` if everything was ok
 * **has** - Return boolean information that cache element exists
+* **getMultipleSetExceptions** - Return list of exceptions that was occurred during `setMultiple`
 
 ## Exceptions
 
