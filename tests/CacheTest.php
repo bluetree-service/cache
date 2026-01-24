@@ -50,20 +50,18 @@ class CacheTest extends TestCase
         $this->assertEmpty($items);
     }
 
-    /**
-     * @expectedException \BlueCache\CacheException
-     * @expectedExceptionMessage Incorrect storage type: BlueCache\Cache
-     */
     public function testCreateCacheWithIncorrectStorage()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessageMatches(
+            '/Cannot assign .*BlueCache\\\\Cache.* to property .*\\\\Cache::\\$storage of type .*StorageInterface/'
+        );
         new Cache(['storage_class' => Cache::class]);
     }
 
-    /**
-     * @expectedException \BlueCache\CacheException
-     */
     public function testCreateCacheWithIncorrectStorageType()
     {
+        $this->expectException(\BlueCache\CacheException::class);
         new Cache(['storage_class' => 123123]);
     }
 
@@ -137,11 +135,9 @@ class CacheTest extends TestCase
         $this->assertTrue($cache->hasItem('test'));
     }
 
-    /**
-     * @expectedException \BlueCache\CacheException
-     */
     public function testSaveDeferredWithError()
     {
+        $this->expectException(\BlueCache\CacheException::class);
         $cache = new Cache([
             'storage_directory' => $this->cachePath
         ]);
@@ -153,7 +149,7 @@ class CacheTest extends TestCase
 
         $this->assertFalse($cache->hasItem('test'));
 
-        chmod($this->cachePath, 0555);
+        chmod($this->cachePath, 0444);
 
         $cache->commit();
     }
@@ -199,7 +195,7 @@ class CacheTest extends TestCase
     /**
      * actions launched before test starts
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->cachePath = dirname(__DIR__) . '/tests/var/cache';
         $this->fullTestFilePath = $this->cachePath . '/test.cache';
@@ -210,7 +206,7 @@ class CacheTest extends TestCase
     /**
      * actions launched after test was finished
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         chmod($this->cachePath, 0777);
 

@@ -1,32 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueCache;
 
 use Psr\Cache\CacheItemInterface;
 
 class CacheItem implements CacheItemInterface
 {
-    const ALLOWED_KEY_CHARS = '#^[\w_-]+$#';
+    public const ALLOWED_KEY_CHARS = '#^[\w_-]+$#';
 
     /**
      * @var string
      */
-    protected $key;
+    protected string $key;
 
     /**
      * @var mixed
      */
-    protected $data;
+    protected mixed $data = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $expire;
+    protected int|null $expire = null;
+
+    /**
+     * @var int|null
+     */
+    protected int|null $expireAfter = null;
 
     /**
      * @var array
      */
-    protected $config = [
+    protected array $config = [
         'expire' => 86400,
     ];
 
@@ -35,31 +42,31 @@ class CacheItem implements CacheItemInterface
      *
      * @param string $key
      * @param array $config
-     * @throws \BlueCache\CacheException
+     * @throws CacheException
      */
-    public function __construct($key, array $config = [])
+    public function __construct(string $key, array $config = [])
     {
         if ($this->isKeyInvalid($key)) {
             throw new CacheException('Invalid key. Should us only chars, numbers and _. Use: ' . $key);
         }
 
         $this->key = $key;
-        $this->config = array_merge($this->config, $config);
+        $this->config = \array_merge($this->config, $config);
     }
 
     /**
      * @param string $key
      * @return bool
      */
-    protected function isKeyInvalid($key)
+    protected function isKeyInvalid(string $key): bool
     {
-        return !preg_match(self::ALLOWED_KEY_CHARS, $key);
+        return !\preg_match(self::ALLOWED_KEY_CHARS, $key);
     }
 
     /**
      * @return string
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
@@ -67,7 +74,7 @@ class CacheItem implements CacheItemInterface
     /**
      * @return mixed|null
      */
-    public function get()
+    public function get(): mixed
     {
         return $this->isHit() ? $this->data : null;
     }
@@ -77,27 +84,29 @@ class CacheItem implements CacheItemInterface
      *
      * @return bool
      */
-    public function isHit()
+    public function isHit(): bool
     {
-        if (is_null($this->data)) {
+        if (\is_null($this->data)) {
             return false;
         }
 
-        if (is_null($this->expire)) {
+        if (\is_null($this->expire)) {
             return true;
         }
 
-        return !($this->expire <= time());
+        return $this->expire > \time();
     }
 
     /**
      * @param mixed $value
      * @return $this
      */
-    public function set($value)
+    public function set(mixed $value): self
     {
         $this->data = $value;
-        $this->expire = null;
+        if (!\is_null($this->expireAfter)) {
+            $this->expiresAfter($this->expireAfter);
+        }
 
         return $this;
     }
@@ -105,53 +114,67 @@ class CacheItem implements CacheItemInterface
     /**
      * @param \DateTimeInterface|null $expiration
      * @return $this
-     * @throws \BlueCache\CacheException
      */
-    public function expiresAt($expiration = null)
+    public function expiresAt($expiration = null): self
     {
         return $this->setExpiration($expiration);
     }
 
     /**
-     * @param \DateTimeInterface|null|int $expire
+     * @param \DateTimeInterface|\DateInterval|null|int $expire
      * @return $this
-     * @throws \BlueCache\CacheException
      */
-    protected function setExpiration($expire)
+    protected function setExpiration(\DateInterval|\DateTimeInterface|null|int $expire): self
     {
         switch (true) {
-            case is_null($expire):
-                $this->expire = $this->config['expire'] + time();
+            case \is_null($expire):
+                $this->expire = $this->config['expire'] + \time();
+                $this->expireAfter = $this->config['expire'];
                 break;
 
-            case is_int($expire):
-                $this->expire = time() + $expire;
+            case \is_int($expire):
+                $this->expire = \time() + $expire;
+                $this->expireAfter = $expire;
                 break;
 
             case $expire instanceof \DateTimeInterface:
                 $this->expire = $expire->getTimestamp();
+                $this->expireAfter = $this->expire - time();
                 break;
 
             case $expire instanceof \DateInterval:
-                $this->expire = (new \DateTime)
+                $this->expire = (new \DateTime())
                     ->add($expire)
                     ->getTimestamp();
+                $this->expireAfter = $this->expire - time();
                 break;
-
-            default:
-                throw new CacheException('Invalid expire type.');
         }
 
         return $this;
     }
 
     /**
-     * @param \DateInterval|int|null $time
+     * @param \DateTimeInterface|\DateInterval|int|null $time
      * @return $this
-     * @throws \BlueCache\CacheException
      */
-    public function expiresAfter($time = null)
+    public function expiresAfter($time = null): self
     {
         return $this->setExpiration($time);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getExpirationTime(): ?int
+    {
+        return $this->expire;
+    }
+
+    /**
+    * @return string|null
+    */
+    public function getExpirationTimeFormatted(): ?string
+    {
+        return $this->expire ? date('c', $this->expire) : null;
     }
 }

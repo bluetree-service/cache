@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueCache;
 
 use Psr\SimpleCache\CacheInterface;
@@ -11,14 +13,14 @@ class SimpleCache implements CacheInterface
     /**
      * @var array
      */
-    protected $multipleSetExceptions = [];
+    protected array $multipleSetExceptions = [];
 
     /**
      * @param string $key
      * @param mixed $default
-     * @return array|null|\Psr\Cache\CacheItemInterface
+     * @return mixed
      */
-    public function get($key, $default = null)
+    public function get($key, $default = null): mixed
     {
         $cacheItem = $this->storage->restore($key);
 
@@ -34,9 +36,9 @@ class SimpleCache implements CacheInterface
      * @param mixed $value
      * @param \DateTimeInterface|\DateInterval|null|int $ttl
      * @return bool
-     * @throws \BlueCache\CacheException
+     * @throws CacheException
      */
-    public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null): bool
     {
         $item = (new CacheItem($key))->set($value);
 
@@ -50,18 +52,18 @@ class SimpleCache implements CacheInterface
     /**
      * @param string $key
      * @return bool
-     * @throws \BlueCache\CacheException
+     * @throws CacheException
      */
-    public function delete($key)
+    public function delete($key): bool
     {
         return $this->storage->clear($key);
     }
 
     /**
      * @return bool
-     * @throws \BlueCache\CacheException
+     * @throws CacheException
      */
-    public function clear()
+    public function clear(): bool
     {
         return $this->storage->clear();
     }
@@ -71,7 +73,7 @@ class SimpleCache implements CacheInterface
      * @param null|mixed $default
      * @return array
      */
-    public function getMultiple($keys, $default = null)
+    public function getMultiple($keys, $default = null): array
     {
         $list = [];
 
@@ -87,7 +89,7 @@ class SimpleCache implements CacheInterface
      * @param null|int $ttl
      * @return bool
      */
-    public function setMultiple($values, $ttl = null)
+    public function setMultiple($values, $ttl = null): bool
     {
         $flag = true;
 
@@ -107,7 +109,7 @@ class SimpleCache implements CacheInterface
      * @param iterable $keys
      * @return bool
      */
-    public function deleteMultiple($keys)
+    public function deleteMultiple($keys): bool
     {
         return $this->storage->clearMany($keys);
     }
@@ -116,7 +118,7 @@ class SimpleCache implements CacheInterface
      * @param string $key
      * @return bool
      */
-    public function has($key)
+    public function has($key): bool
     {
         return $this->storage->exists($key);
     }
@@ -124,7 +126,7 @@ class SimpleCache implements CacheInterface
     /**
      * @return array
      */
-    public function getMultipleSetExceptions()
+    public function getMultipleSetExceptions(): array
     {
         return $this->multipleSetExceptions;
     }

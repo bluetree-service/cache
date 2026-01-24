@@ -6,50 +6,53 @@ namespace BlueCache\Storage;
 
 use Psr\Cache\CacheItemInterface;
 use BlueCache\CacheException;
+use Memcached as MemcachedOrigin;
 
-class File extends Common implements StorageInterface
+class Memcached extends Common implements StorageInterface
 {
-    public const CACHE_EXTENSION = '.cache';
-
     /**
      * @var array
      */
     protected array $params = [
-        'cache_path' => './var/cache',
+        'storage_servers' => [['127.0.0.1', 11211]],
     ];
 
     /**
+     * @var MemcachedOrigin
+     */
+    protected MemcachedOrigin $memcached;
+
+    /**
      * @param array $params
+     * @throws CacheException
      */
     public function __construct(array $params = [])
     {
         $this->params = \array_merge($this->params, $params);
+
+        $this->memcached = new MemcachedOrigin();
+
+        $this->memcached->addServers($this->params['storage_servers']);
+
+        if (!$this->memcached->getVersion()) {
+            throw new CacheException('Connection with server is not established');
+        }
     }
 
     /**
      * @param CacheItemInterface $item
      * @return bool
-     * @throws CacheException
      */
     public function store(CacheItemInterface $item): bool
     {
         $data = \serialize($item);
         $key = $item->getKey();
 
-        $cacheFile = $this->getFilePath($key);
-        $dir = $this->params['cache_path'];
-
         if (isset($this->currentCache[$key])) {
             unset($this->currentCache[$key]);
         }
 
-        if (!\file_exists($dir) && !\is_dir($dir)) {
-            throw new CacheException('Unable to create cache directory: ' . $this->params['cache_path']);
-        }
-
-        if (!@\file_put_contents($cacheFile, $data)) {
-            throw new CacheException('Unable to save log file: ' . $cacheFile);
-        }
+        $this->memcached->set($key, $data);
 
         return true;
     }
@@ -61,19 +64,8 @@ class File extends Common implements StorageInterface
     public function clear(string|null $name = null): bool
     {
         if (\is_null($name)) {
-            $keyNames = [];
-            $cacheDir = $this->params['cache_path'] . DIRECTORY_SEPARATOR;
-
-            $files = \glob($cacheDir . '*.cache');
-            $prefixLen = \strlen($cacheDir);
-            $suffixLen = \strlen(self::CACHE_EXTENSION);
-
-            foreach ($files as $file) {
-                $name = \substr($file, $prefixLen, -$suffixLen);
-                $keyNames[] = $name;
-            }
-
-            return $this->clearMany($keyNames);
+            $this->currentCache = [];
+            return $this->memcached->flush();
         }
 
         return $this->delete($name);
@@ -86,7 +78,7 @@ class File extends Common implements StorageInterface
     protected function getCacheItem(string $key): ? CacheItemInterface
     {
         if (!isset($this->currentCache[$key])) {
-            if (\file_exists($this->getFilePath($key))) {
+            if ($this->memcached->get($key) !== false) {
                 return $this->getUnserializedCacheItem($key);
             }
 
@@ -102,7 +94,7 @@ class File extends Common implements StorageInterface
      */
     protected function getCacheContent(string $key): bool|string
     {
-        return \file_get_contents($this->getFilePath($key));
+        return $this->memcached->get($key);
     }
 
     /**
@@ -112,15 +104,6 @@ class File extends Common implements StorageInterface
     protected function delete(string $key): bool
     {
         unset($this->currentCache[$key]);
-        return @\unlink($this->getFilePath($key));
-    }
-
-    /**
-     * @param string $key
-     * @return string
-     */
-    protected function getFilePath(string $key): string
-    {
-        return $this->params['cache_path'] . DIRECTORY_SEPARATOR . $key . self::CACHE_EXTENSION;
+        return $this->memcached->delete($key);
     }
 }
