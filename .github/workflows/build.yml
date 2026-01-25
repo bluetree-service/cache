@@ -10,10 +10,28 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
+  test-php-82:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Testing make execution
-        run: echo "Running tests"
+      - name: Build and test for PHP 8.2
+        run: |
+          make up daemon=1 php_version=82
+          make copy php_version=82
+          make build php_version=82
+          make test php_version=82
+          make down php_version=82
+
+  test-php-83:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build and test for PHP 8.3
+        run: |
+          make up daemon=1 php_version=83
+          make copy php_version=83
+          make build php_version=83
+          make test php_version=83
+          make down php_version=83
