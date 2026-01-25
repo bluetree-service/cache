@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 * Composer scripts for testing
 * Memcached support as a storage engine
 * Types for parameters and for return
+* Makefile for easier development
+* Testing on multiple PHP versions
 ### Changed
 * Minimal PHP version set to 8.2
 * Updated required libraries

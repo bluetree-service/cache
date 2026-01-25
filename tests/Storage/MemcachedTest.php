@@ -244,7 +244,7 @@ class MemcachedTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->fileConfig = ['storage_servers' => [['memcached', 11211]]];
+        $this->fileConfig = ['storage_servers' => [[getenv('MEMCACHED_SERVERS') ?: 'memcached', 11211]]];
 
         $this->tearDown();
     }

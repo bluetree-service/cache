@@ -1,0 +1,19 @@
+services:
+  php82:
+    image: chajr/php82-dev
+    depends_on:
+      - memcached82
+    networks:
+      - backend82
+    command: ${RUN_COMMAND}
+    environment:
+      - MEMCACHED_SERVERS=memcached82
+
+  memcached82:
+    image: memcached:latest
+    networks:
+      - backend82
+
+networks:
+  backend82:
+    driver: bridge
