@@ -27,7 +27,7 @@ endif
 PRINT = printf '%b\n' "$(1)"
 
 DOCKER=docker
-DOCKER_COMPOSE=$(DOCKER)-compose
+DOCKER_COMPOSE=$(DOCKER) compose
 LOCAL_USER_ID=$(shell id -u)
 tag?=latest
 platform?=linux/amd64
@@ -62,8 +62,6 @@ export RUN_COMMAND
 export MEMCACHED_SERVERS
 
 init:
-	docker compose version
-	docker-compose -v
 	@$(call PRINT,$(CYAN)🏷️ Docker Tag: $(NC)$(DOCKER_TAG))
 	@$(call PRINT,$(CONNTAINER_MODE_MESSAGE))
 
