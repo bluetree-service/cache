@@ -62,6 +62,8 @@ export RUN_COMMAND
 export MEMCACHED_SERVERS
 
 init:
+	docker compose version
+	docker-compose -v
 	@$(call PRINT,$(CYAN)🏷️ Docker Tag: $(NC)$(DOCKER_TAG))
 	@$(call PRINT,$(CONNTAINER_MODE_MESSAGE))
 
