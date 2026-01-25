@@ -18,6 +18,8 @@ jobs:
       - name: Build and test for PHP 8.2
         run: |
           make up daemon=1 php_version=82
+          docker ps -a
+          docker network ls
           make copy php_version=82
           make build php_version=82
           make test php_version=82
@@ -31,6 +33,8 @@ jobs:
       - name: Build and test for PHP 8.3
         run: |
           make up daemon=1 php_version=83
+          docker ps -a
+          docker network ls
           make copy php_version=83
           make build php_version=83
           make test php_version=83
