@@ -21,8 +21,8 @@ jobs:
           docker ps -a
           docker network ls
           make copy php_version=82
-          make build php_version=82
-          make test php_version=82
+          make build php_version=82 container_mode=1
+          make test php_version=82 container_mode=1
           make down php_version=82
 
   test-php-83:
@@ -36,6 +36,6 @@ jobs:
           docker ps -a
           docker network ls
           make copy php_version=83
-          make build php_version=83
-          make test php_version=83
+          make build php_version=83 container_mode=1
+          make test php_version=83 container_mode=1
           make down php_version=83
