@@ -13,6 +13,8 @@ build:
       environment:
         node:
           version: 6.0.0
+        php:
+          version: 8.5
     tests: true
 filter:
   excluded_paths:
