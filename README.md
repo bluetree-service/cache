@@ -9,7 +9,6 @@ Bluetree PSR-6 & PSR-16 cache
 [![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master)
 
 
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=bluetree-service_cache)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)

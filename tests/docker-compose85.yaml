@@ -5,8 +5,8 @@ services:
       - memcached85
     networks:
       - backend85
-#    volumes:
-#      - ../:/var/www/html/
+    volumes:
+      - ../build:/var/www/html/build
     command: ${RUN_COMMAND}
     environment:
       - MEMCACHED_SERVERS=memcached85
