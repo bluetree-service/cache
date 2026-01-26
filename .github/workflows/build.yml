@@ -33,3 +33,24 @@ jobs:
         uses: ./.github/actions/test
         with:
           php_version: '83'
+
+  test-php-84:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: ./.github/actions/test
+        with:
+          php_version: '84'
+
+  test-php-85:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: ./.github/actions/test
+        with:
+          php_version: '85'
+

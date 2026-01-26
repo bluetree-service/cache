@@ -85,10 +85,6 @@ test: init
 	@echo "$(BLUE)🧪 Running tests...$(NC)"
 	$(CONTAINER_MODE) composer test
 
-coverage: init
-	@echo "$(BLUE)🧪 Running tests with coverage...$(NC)"
-	$(CONTAINER_MODE) composer coverage
-
 composer-install: init
 	@echo "$(BLUE)💻 Connect with container...$(NC)"
 	$(CONTAINER_MODE) composer install
@@ -99,15 +95,26 @@ test-all: init
 		echo "===> Testing with $$file"; \
 		version=$$(echo "$$file" | sed -E 's/.*([0-9]{2})\.yaml/\1/'); \
 		echo "🛠 PHP version:$(BLUE) $$version $(NC)"; \
-		$(MAKE) up daemon=1 php_version=$${version}; \
-		$(MAKE) copy php_version=$${version}; \
-		$(MAKE) build php_version=$${version} container_mode=1; \
-		$(MAKE) test php_version=$${version} container_mode=1; \
-		$(MAKE) down php_version=$${version}; \
-		echo "======================================================================================="; \
+		$(MAKE) run-and-test php_version=$${version}; \
+		echo "====================================================================================================="; \
 	done
+
+run-and-test: init
+	@echo "$(BLUE)🚀 Running environment and tests...$(NC)"
+	$(MAKE) up daemon=1 php_version=$(PHP_VERSION)
+	$(MAKE) copy php_version=$(PHP_VERSION)
+	$(MAKE) build container_mode=1 php_version=$(PHP_VERSION)
+	$(MAKE) test container_mode=1 php_version=$(PHP_VERSION)
+	$(MAKE) down php_version=$(PHP_VERSION)
 
 copy: init
 	@echo "$(BLUE)💻 Copy files to container...$(NC)"
 	@$(DOCKER_COMPOSE_COMMAND) cp . php$(PHP_VERSION):/var/www/html
 	@$(DOCKER_COMPOSE_COMMAND) exec php$(PHP_VERSION) chown -R www-data:www-data /var/www/html
+
+run: up copy build
+
+coverage:
+	@echo "$(BLUE)🧪 Running tests with coverage...$(NC)"
+	$(CONTAINER_MODE) composer coverage
+	$(CONTAINER_MODE) composer clover-report

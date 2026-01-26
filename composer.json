@@ -35,8 +35,9 @@
     "scripts": {
         "test": "./vendor/bin/phpunit --display-warnings",
         "coverage": "./vendor/bin/phpunit --display-warnings --coverage-clover build/logs/clover.xml",
+        "clover-report": "./bin/clover_reporter -c build/logs/clover.xml ./",
         "test-complete": [
-            "@coverage",
+            "@coverage"
         ]
     }
 }
