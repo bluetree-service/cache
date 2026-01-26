@@ -1,11 +1,28 @@
 build:
-  environment:
-    php:
-      version: 8.2, 8.3, 8.4, 8.5
-  tests:
-    override:
-      -
-        command: 'vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
-        coverage:
-          file: 'build/logs/clover.xml'
-          format: 'clover'
+  nodes:
+    analysis:
+      project_setup:
+        override:
+          - 'true'
+      tests:
+        override:
+          - php-scrutinizer-run
+          -
+            command: phpcs-run
+            use_website_config: true
+      environment:
+        node:
+          version: 6.0.0
+    tests: true
+filter:
+  excluded_paths:
+    - 'tests/*'
+    - 'docs/*'
+    - '.github/*'
+checks:
+  php: true
+coding_style:
+  php:
+    spaces:
+      around_operators:
+        concatenation: true
