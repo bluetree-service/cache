@@ -9,10 +9,16 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   test-php-82:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
       - name: Checkout repository
         uses: ./.github/actions/test
         with:
@@ -21,6 +27,8 @@ jobs:
   test-php-83:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
       - name: Checkout repository
         uses: ./.github/actions/test
         with:
