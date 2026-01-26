@@ -7,7 +7,8 @@ Bluetree PSR-6 & PSR-16 cache
 
 [![Build Status](https://travis-ci.org/bluetree-service/cache.svg?style=flat-square)](https://travis-ci.org/bluetree-service/cache)
 [![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master)
-
+[![Build Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/build.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/coverage.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master)
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
