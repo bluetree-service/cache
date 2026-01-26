@@ -25,4 +25,3 @@ runs:
           make coverage php_version=${{ inputs.php_version }} container_mode=1
         fi
         make down php_version=${{ inputs.php_version }}
-        make down php_version=${{ inputs.php_version }}
