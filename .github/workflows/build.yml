@@ -67,7 +67,7 @@ jobs:
       - name: Run coverage action
         uses: ./.github/actions/test
         with:
-          php_versions: '85'
+          php_version: '85'
           coverage: '1'
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v7
