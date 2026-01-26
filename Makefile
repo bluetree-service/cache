@@ -117,4 +117,7 @@ run: up copy build
 coverage:
 	@echo "$(BLUE)🧪 Running tests with coverage...$(NC)"
 	$(CONTAINER_MODE) composer coverage
+
+coverage-status: coverage
+	@echo "$(BLUE)🧪 Coverage status...$(NC)"
 	$(CONTAINER_MODE) composer clover-report
