@@ -5,6 +5,9 @@ inputs:
   php_version:
     description: 'PHP version'
     required: true
+  coverage:
+    description: 'PHP version'
+    default: '0'
 
 runs:
   using: "composite"
@@ -18,4 +21,7 @@ runs:
         make copy php_version=${{ inputs.php_version }}
         make build php_version=${{ inputs.php_version }} container_mode=1
         make test php_version=${{ inputs.php_version }} container_mode=1
+        if [ "${{ inputs.coverage }}" = "1" ]; then
+          make coverage php_version=${{ inputs.php_version }} container_mode=1
+        fi
         make down php_version=${{ inputs.php_version }}

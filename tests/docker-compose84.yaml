@@ -1,0 +1,19 @@
+services:
+  php84:
+    image: chajr/php84-dev
+    depends_on:
+      - memcached84
+    networks:
+      - backend84
+    command: ${RUN_COMMAND}
+    environment:
+      - MEMCACHED_SERVERS=memcached84
+
+  memcached84:
+    image: memcached:latest
+    networks:
+      - backend84
+
+networks:
+  backend84:
+    driver: bridge

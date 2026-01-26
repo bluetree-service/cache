@@ -1,6 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.4.0.0 - 2026-01-24
+### Added
+* Composer scripts for testing
+* Memcached support as a storage engine
+* Types for parameters and for return
+* Makefile for easier development
+* Testing on multiple PHP versions
+### Changed
+* Minimal PHP version set to 8.2
+* Updated required libraries
+* Fixed some issues related to the internal class cache
+* Fixed restore method for File storage
+* Common parts of storages moved to single file
+* Improved tests
+### Removed
+* Some unused tests
+* php-coveralls
+
 ## 0.3.0.0 - 2017-12-20
 ### Changed
 * Fixed some method return types to be compatible with PSR

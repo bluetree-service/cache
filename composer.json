@@ -14,9 +14,13 @@
         }
     ],
     "require": {
-        "php": ">=5.6.0",
+        "php": "^8.2",
         "psr/cache": "^1.0",
         "psr/simple-cache": "^1.0"
+    },
+    "require-optional": {    
+        "ext-memcached": "*",
+        "ext-redis": "*"
     },
     "autoload": {
         "psr-4": {
@@ -24,9 +28,16 @@
         }
     },
     "require-dev": {
-        "satooshi/php-coveralls": "^1.0",
-        "phpunit/phpunit": "4.8.35",
-        "phpdocumentor/reflection-docblock": "3.*",
-        "roave/security-advisories": "dev-master"
+        "phpunit/phpunit": "^11.5",
+        "phpdocumentor/reflection-docblock": "^6.0",
+        "roave/security-advisories": "dev-latest"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --display-warnings",
+        "coverage": "./vendor/bin/phpunit --display-warnings --coverage-clover build/logs/clover.xml",
+        "clover-report": "./bin/clover_reporter -c build/logs/clover.xml ./",
+        "test-complete": [
+            "@coverage"
+        ]
     }
 }

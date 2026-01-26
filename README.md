@@ -5,21 +5,20 @@ Bluetree PSR-6 & PSR-16 cache
 [![Total Downloads](https://poser.pugx.org/bluetree-service/cache/downloads.svg?style=flat-square)](https://packagist.org/packages/bluetree-service/cache)
 [![License](https://poser.pugx.org/bluetree-service/cache/license.svg?style=flat-square)](https://packagist.org/packages/bluetree-service/cache)
 
-##### Builds
-| Travis | Scrutinizer |
-|:---:|:---:|
-| [![Build Status](https://travis-ci.org/bluetree-service/cache.svg?style=flat-square)](https://travis-ci.org/bluetree-service/cache) | [![Build Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/build.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/build-status/master) |
+[![Build Status](https://travis-ci.org/bluetree-service/cache.svg?style=flat-square)](https://travis-ci.org/bluetree-service/cache)
+[![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/build.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/build-status/master)
+[![Code Coverage](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/coverage.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master)
 
-##### Coverage
-| Coveralls | Scrutinizer |
-|:---:|:---:|
-| [![Coverage Status](https://coveralls.io/repos/github/bluetree-service/cache/badge.svg?style=flat-square&branch=master)](https://coveralls.io/github/bluetree-service/cache?branch=master) | [![Code Coverage](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/coverage.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master) |
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=bluetree-service_cache&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
 
-##### Quality
-| Code Climate | Scrutinizer | Sensio Labs |
-|:---:|:---:|:---:|
-| [![Code Climate](https://codeclimate.com/github/bluetree-service/cache/badges/gpa.svg?style=flat-square)](https://codeclimate.com/github/bluetree-service/cache) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/quality-score.png?style=flat-square&b=master)](https://scrutinizer-ci.com/g/bluetree-service/cache/?branch=master) | [![SensioLabsInsight](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352/mini.png?style=flat-square)](https://insight.sensiolabs.com/projects/e9b6307b-4407-4fbe-8e40-233a3ec7f352) |
-|  | [![Code Intelligence Status](https://scrutinizer-ci.com/g/bluetree-service/cache/badges/code-intelligence.svg?style=flat-square&b=master)](https://scrutinizer-ci.com/code-intelligence) |  |
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-dark.svg)](https://sonarcloud.io/summary/new_code?id=bluetree-service_cache)
 
 PSR-6 and/or PSR-16 cache system, based on file storage.
 
@@ -29,7 +28,9 @@ PSR-6 and/or PSR-16 cache system, based on file storage.
 * **BlueCache\CacheItem** - Cache item element for PSR-6 (used also not explicitly by SimpleCache)
 * **BlueCache\CacheException** - Exception class for all PSR-6/16 exceptions
 * **BlueCache\Common** - Common with PSR-6 and 16 methods
+* **BlueCache\Storage\Common** - Common methods for all storage classes
 * **BlueCache\Storage\File** - Allow storage cache as files on local filesystem
+* **BlueCache\Storage\Memcached** -Allow storage cache in Memcached server
 * **BlueCache\Storage\StorageInterface** - Storage interface for future usage by other storage systems
 
 Documentation
@@ -67,7 +68,7 @@ Project description
 
 ### Requirements
 
-* PHP 5.6 or higher
+* PHP 8.2 or higher
 
 Change log
 --------------

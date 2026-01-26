@@ -49,20 +49,18 @@ class SimpleCacheTest extends TestCase
         $this->assertInstanceOf(SimpleCache::class, $cache);
     }
 
-    /**
-     * @expectedException \BlueCache\CacheException
-     * @expectedExceptionMessage Incorrect storage type: BlueCache\SimpleCache
-     */
     public function testCreateSimpleCacheWithIncorrectStorage()
     {
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessageMatches(
+            '/Cannot assign .*BlueCache\\\\SimpleCache.* to property .*\\\\SimpleCache::\\$storage of type .*StorageInterface/'
+        );
         new SimpleCache(['storage_class' => SimpleCache::class]);
     }
 
-    /**
-     * @expectedException \BlueCache\CacheException
-     */
     public function testCreateSimpleCacheWithIncorrectStorageType()
     {
+        $this->expectException(\BlueCache\CacheException::class);
         new SimpleCache(['storage_class' => 123123]);
     }
 
@@ -123,7 +121,7 @@ class SimpleCacheTest extends TestCase
         $this->assertFalse($cache->has('test1'));
         $this->assertFalse($cache->has('test2'));
 
-        chmod($this->cachePath, 0555);
+        chmod($this->cachePath, 0444);
 
         $bool = $cache->setMultiple([
             'test1' => $data1,
@@ -136,11 +134,11 @@ class SimpleCacheTest extends TestCase
         $this->assertArrayHasKey('test1', $cache->getMultipleSetExceptions());
         $this->assertArrayHasKey('test2', $cache->getMultipleSetExceptions());
 
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '#Unable to save log file: .*tests\/var\/cache\/test1\.cache#',
             $cache->getMultipleSetExceptions()['test1']
         );
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '#Unable to save log file: .*tests\/var\/cache\/test2\.cache#',
             $cache->getMultipleSetExceptions()['test2']
         );
@@ -232,7 +230,7 @@ class SimpleCacheTest extends TestCase
     /**
      * actions launched before test starts
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->cachePath = dirname(__DIR__) . '/tests/var/cache';
         $this->fullTestFilePath = $this->cachePath . '/test.cache';
@@ -245,7 +243,7 @@ class SimpleCacheTest extends TestCase
     /**
      * actions launched after test was finished
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->unlinkFile($this->fullTestFilePath)
             ->unlinkFile($this->fullTestFilePath1)

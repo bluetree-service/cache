@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: michal
@@ -8,29 +11,33 @@
 
 namespace BlueCache;
 
-use \BlueCache\Storage\File;
-use \BlueCache\Storage\StorageInterface;
+use \BlueCache\Storage\{
+    File,
+    Memcached,
+};
+use BlueCache\Storage\StorageInterface;
 
 trait Common
 {
     /**
      * @var StorageInterface
      */
-    protected $storage;
+    protected StorageInterface $storage;
 
     /**
      * @var array
      */
-    protected $config = [
+    protected array $config = [
         'storage_class' => File::class,
         'storage_directory' => './var/cache',
+        'storage_servers' => [['127.0.0.1', 11211]],
     ];
 
     /**
      * check that cache directory exist and create it if not
      *
      * @param array $config
-     * @throws \BlueCache\CacheException
+     * @throws CacheException
      */
     public function __construct(array $config = [])
     {
@@ -40,40 +47,39 @@ trait Common
     }
 
     /**
-     * @return $this
-     * @throws \BlueCache\CacheException
+     * @return Common|Cache|SimpleCache
+     * @throws CacheException
      */
-    protected function registerStorage()
+    protected function registerStorage(): self
     {
-        switch (true) {
-            case $this->config['storage_class'] instanceof StorageInterface:
-                $this->storage = $this->config['storage_class'];
-                break;
-
-            case $this->config['storage_class'] === File::class:
-            case \is_string($this->config['storage_class']):
-                $this->factoryStorage();
-                break;
-
-            default:
-                throw new CacheException('Incorrect storage type: ' . \get_class($this->storage));
-        }
+            switch (true) {
+                case $this->config['storage_class'] instanceof StorageInterface:
+                    $this->storage = $this->config['storage_class'];
+                    break;
+    
+                case $this->config['storage_class'] === File::class:
+                case $this->config['storage_class'] === Memcached::class:
+                case \is_string($this->config['storage_class']):
+                    $this->factoryStorage();
+                    break;
+    
+                default:
+                    throw new CacheException('Incorrect storage type: ' . $this->config['storage_class']);
+            }
 
         return $this;
     }
 
     /**
-     * @return $this
-     * @throws \BlueCache\CacheException
+     * @return Common|Cache|SimpleCache
      */
-    protected function factoryStorage()
+    protected function factoryStorage(): self
     {
-        $config = ['cache_path' => $this->config['storage_directory']];
+        $config = [
+            'cache_path' => $this->config['storage_directory'],
+            'storage_servers' => $this->config['storage_servers'],
+        ];
         $this->storage = new $this->config['storage_class']($config);
-
-        if (!($this->storage instanceof StorageInterface)) {
-            throw new CacheException('Incorrect storage type: ' . $this->config['storage_class']);
-        }
 
         return $this;
     }

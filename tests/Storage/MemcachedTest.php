@@ -2,11 +2,11 @@
 
 namespace BlueCache\Test;
 
-use BlueCache\Storage\File;
+use BlueCache\Storage\Memcached;
 use BlueCache\CacheItem;
 use PHPUnit\Framework\TestCase;
 
-class FileTest extends TestCase
+class MemcachedTest extends TestCase
 {
     /**
      * store generated cache file path
@@ -47,18 +47,11 @@ class FileTest extends TestCase
         'Some another log message',
     ];
 
-    public function testCreateCacheFile()
+    public function testCreateCacheMemcached()
     {
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
-
         $item = new CacheItem($this->testCache);
-        $cache = new File($this->fileConfig);
+        $cache = new Memcached($this->fileConfig);
         $cache->store($item->set($this->testMessage[0]));
-
-        $this->assertFileExists($this->fullTestFilePath);
-
-        $content = file_get_contents($this->fullTestFilePath);
-        $this->assertInstanceOf(CacheItem::class, unserialize($content));
 
         $data = $cache->restore($this->testCache);
 
@@ -66,31 +59,24 @@ class FileTest extends TestCase
         $this->assertEquals($this->testMessage[0], $data->get());
     }
 
-    public function testCreateCacheFileForIncorrectDir()
+    public function testCreateCacheWithoutConnection()
     {
-        $this->expectExceptionMessage("Unable to create cache directory:");
+        $this->expectExceptionMessage("Connection with server is not established");
         $this->expectException(\BlueCache\CacheException::class);
         $conf = [
-            'cache_path' => $this->cachePathNoAccess . '/dir'
+            'storage_servers' => [['memcached_none_existing', 11]]
         ];
 
-        (new File($conf))->store(new CacheItem($this->testCache));
+        (new Memcached($conf))->store(new CacheItem($this->testCache));
+
     }
 
     public function testAddMessageForExistingLog()
     {
-        $storage = new File($this->fileConfig);
+        $storage = new Memcached($this->fileConfig);
         $item = new CacheItem($this->testCache);
 
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
-
         $storage->store($item->set($this->testMessage[0]));
-
-        $this->assertFileExists($this->fullTestFilePath);
-
-        $content = file_get_contents($this->fullTestFilePath);
-        $this->assertInstanceOf(CacheItem::class, unserialize($content));
-        $this->assertEquals($this->testMessage[0], unserialize($content)->get());
 
         $data = $storage->restore($this->testCache);
         $this->assertInstanceOf(CacheItem::class, $data);
@@ -98,29 +84,24 @@ class FileTest extends TestCase
 
         $storage->store($item->set($this->testMessage[1]));
 
-        $this->assertFileExists($this->fullTestFilePath);
-
-        $content = file_get_contents($this->fullTestFilePath);
-        $this->assertInstanceOf(CacheItem::class, unserialize($content));
-        $this->assertEquals($this->testMessage[1], unserialize($content)->get());
-
         $data = $storage->restore($this->testCache);
         $this->assertInstanceOf(CacheItem::class, $data);
         $this->assertEquals($this->testMessage[1], $data->get());
     }
 
-    public function testWriteForIncorrectCacheFile()
+    public function testWriteForIncorrectCacheKey()
     {
         $this->expectException(\BlueCache\CacheException::class);
-        $file = new File($this->fileConfig);
-        $file->store(new CacheItem($this->testCache));
+        $this->expectExceptionMessage("Invalid key. Should us only chars, numbers and _. Use: bad key");
 
-        $file->store(new CacheItem($this->testCache . '*'));
+        $key = "bad key\n";
+        $storage = new Memcached($this->fileConfig);
+        $storage->store(new CacheItem($key));
     }
 
     public function testCacheExists()
     {
-        $storage = new File($this->fileConfig);
+        $storage = new Memcached($this->fileConfig);
         $item = (new CacheItem($this->testCache))->set('data');
 
         $this->assertFalse($storage->exists($this->testCache));
@@ -132,14 +113,19 @@ class FileTest extends TestCase
 
     public function testRestoreCache()
     {
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
         $item = new CacheItem($this->testCache);
+        $storage = new Memcached($this->fileConfig);
 
-        (new File($this->fileConfig))->store($item->set($this->testMessage[0]));
+        $data = $storage->restore($this->testCache);
+        $this->assertNull($data);
 
-        $this->assertFileExists($this->fullTestFilePath);
+        $storage->store($item->set($this->testMessage[0]));
 
-        $content = (new File($this->fileConfig))->restore($this->testCache);
+        $data = $storage->restore($this->testCache);
+        $this->assertInstanceOf(CacheItem::class, $data);
+        $this->assertEquals($this->testMessage[0], $data->get());
+
+        $content = (new Memcached($this->fileConfig))->restore($this->testCache);
 
         $this->assertInstanceOf(CacheItem::class, $content);
         $this->assertEquals($this->testMessage[0], $content->get());
@@ -147,25 +133,32 @@ class FileTest extends TestCase
 
     public function testRestoreCacheAfterExpiration()
     {
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
         $item = new CacheItem($this->testCache);
         $item->expiresAfter(1);
+        $item->set($this->testMessage[0]);
 
-        $storage = new File($this->fileConfig);
+        $storage = new Memcached($this->fileConfig);
+
+        $data = $storage->restore($this->testCache);
+        $this->assertNull($data);
+        
         $storage->store($item);
 
-        $this->assertFileExists($this->fullTestFilePath);
+        $this->assertTrue($storage->exists($this->testCache));
+        $item = $storage->restore($this->testCache);
+        $this->assertEquals($this->testMessage[0], $item->get());
 
-        sleep(1);
+        sleep(2);
 
-        $content = $storage->exists($this->testCache);
+        $item = $storage->restore($this->testCache);
 
-        $this->assertFalse($content);
+        $this->assertNull($item);
+        $this->assertFalse($storage->exists($this->testCache));
     }
 
     public function testRestoreManyCache()
     {
-        $contents = $this->createCacheFiles();
+        $contents = $this->createCache();
 
         $this->assertInstanceOf(CacheItem::class, $contents['test_cache']);
         $this->assertEquals($this->testMessage[0], $contents['test_cache']->get());
@@ -176,36 +169,33 @@ class FileTest extends TestCase
 
     public function testRestoreNotExisting()
     {
-        $content = (new File($this->fileConfig))->restore($this->testCache);
+        $content = (new Memcached($this->fileConfig))->restore($this->testCache);
 
         $this->assertNull($content);
     }
 
     public function testRestoreEmptyItem()
     {
-        $cache = new File($this->fileConfig);
+        $cache = new Memcached($this->fileConfig);
         $cache->store(new CacheItem($this->testCache));
         $content = $cache->restore($this->testCache);
 
         $this->assertNull($content);
     }
 
-    protected function createCacheFiles()
+    protected function createCache()
     {
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
-        $this->assertFileDoesNotExist($this->fullTestFilePath2);
-
-        $storage = new File($this->fileConfig);
+        $storage = new Memcached($this->fileConfig);
         $item1 = new CacheItem($this->testCache);
         $item2 = new CacheItem($this->testCache2);
 
         $storage->store($item1->set($this->testMessage[0]));
         $storage->store($item2->set($this->testMessage[1]));
 
-        $this->assertFileExists($this->fullTestFilePath);
-        $this->assertFileExists($this->fullTestFilePath2);
+        $this->assertTrue($storage->exists($this->testCache));
+        $this->assertTrue($storage->exists($this->testCache2));
 
-        return (new File($this->fileConfig))->restore([
+        return (new Memcached($this->fileConfig))->restore([
             $this->testCache,
             $this->testCache2,
         ]);
@@ -213,40 +203,40 @@ class FileTest extends TestCase
 
     public function testClearCache()
     {
-        $this->createCacheFiles();
-        $storage = new File($this->fileConfig);
+        $this->createCache();
+        $storage = new Memcached($this->fileConfig);
 
         $storage->clear($this->testCache);
         $storage->clear($this->testCache2);
 
-        $this->createCacheFiles();
+        $this->createCache();
         $storage->clear();
 
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
-        $this->assertFileDoesNotExist($this->fullTestFilePath2);
+        $this->assertFalse($storage->exists($this->testCache));
+        $this->assertFalse($storage->exists($this->testCache2));
     }
 
     public function testClearMany()
     {
-        $this->createCacheFiles();
-        $storage = new File($this->fileConfig);
+        $this->createCache();
+        $storage = new Memcached($this->fileConfig);
 
         $isDeleted = $storage->clearMany([$this->testCache, $this->testCache2]);
 
         $this->assertTrue($isDeleted);
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
-        $this->assertFileDoesNotExist($this->fullTestFilePath2);
+        $this->assertFalse($storage->exists($this->testCache));
+        $this->assertFalse($storage->exists($this->testCache2));
     }
 
     public function testClearManyWithError()
     {
-        $this->createCacheFiles();
-        $storage = new File($this->fileConfig);
+        $this->createCache();
+        $storage = new Memcached($this->fileConfig);
 
         $isDeleted = $storage->clearMany(['non_existing_key', $this->testCache]);
 
         $this->assertFalse($isDeleted);
-        $this->assertFileDoesNotExist($this->fullTestFilePath);
+        $this->assertFalse($storage->exists($this->testCache));
     }
 
     /**
@@ -254,16 +244,7 @@ class FileTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->cachePath = dirname(__DIR__) . '/var/cache';
-        $this->cachePathNoAccess = $this->cachePath . 'NoAccess';
-        $this->fileConfig = ['cache_path' => $this->cachePath];
-        $this->fullTestFilePath = $this->cachePath . '/' . $this->testCache . '.cache';
-        $this->fullTestFilePath2 = $this->cachePath . '/' . $this->testCache2 . '.cache';
-
-        if (!is_dir($this->cachePathNoAccess)) {
-            mkdir($this->cachePathNoAccess);
-        }
-        chmod($this->cachePathNoAccess, 0555);
+        $this->fileConfig = ['storage_servers' => [[getenv('MEMCACHED_SERVERS') ?: 'memcached', 11211]]];
 
         $this->tearDown();
     }
@@ -273,17 +254,7 @@ class FileTest extends TestCase
      */
     protected function tearDown(): void
     {
-        if (file_exists($this->fullTestFilePath)) {
-            unlink($this->fullTestFilePath);
-        }
-
-        if (file_exists($this->fullTestFilePath2)) {
-            unlink($this->fullTestFilePath2);
-        }
-
-        if (file_exists($this->cachePathNoAccess)) {
-            chmod($this->cachePathNoAccess, 0777);
-            rmdir($this->cachePathNoAccess);
-        }
+        $storage = new Memcached($this->fileConfig);
+        $storage->clear();
     }
 }
