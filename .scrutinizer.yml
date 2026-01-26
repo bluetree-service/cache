@@ -12,7 +12,7 @@ build:
             use_website_config: true
       environment:
         php:
-          version: 8.4
+          version: 8.3
     tests: true
 filter:
   excluded_paths:
