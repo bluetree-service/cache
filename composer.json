@@ -28,7 +28,6 @@
         }
     },
     "require-dev": {
-        "php-coveralls/php-coveralls": "^2.9",
         "phpunit/phpunit": "^11.5",
         "phpdocumentor/reflection-docblock": "^6.0",
         "roave/security-advisories": "dev-latest"
@@ -36,10 +35,8 @@
     "scripts": {
         "test": "./vendor/bin/phpunit --display-warnings",
         "coverage": "./vendor/bin/phpunit --display-warnings --coverage-clover build/logs/clover.xml",
-        "coveralls": "php vendor/bin/php-coveralls -v",
         "test-complete": [
             "@coverage",
-            "@coveralls"
         ]
     }
 }
