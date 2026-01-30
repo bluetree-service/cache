@@ -1,5 +1,5 @@
-name: 'Deploy with Podman'
-description: 'Deploy application using Podman with required secrets and variables'
+name: 'Build and Test'
+description: 'Build and test on multiple PHP versions'
 
 inputs:
   php_version:

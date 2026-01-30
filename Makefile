@@ -41,6 +41,7 @@ compose_file?=tests/docker-compose
 DOCKER_COMPOSE_COMMAND=$(DOCKER_COMPOSE) -f $(compose_file)$(PHP_VERSION).yaml
 MAKE=make
 MEMCACHED_SERVERS=localhost
+mount_local=0
 
 DAEMON=
 ifeq (1,$(daemon))
@@ -54,12 +55,18 @@ ifeq (1,$(container_mode))
 	CONNTAINER_MODE_MESSAGE=$(BLUE)ℹ️ Running command inside php container...$(NC)
 endif
 
+MOUNT_POINT=../:/var/www/origin
+ifeq (1,$(mount_local))
+	MOUNT_POINT=../:/var/www/html
+endif
+
 export DOCKER_TAG:=$(tag)
 export tag
 export LOCAL_USER_ID
 export PHP_VERSION
 export RUN_COMMAND
 export MEMCACHED_SERVERS
+export MOUNT_POINT
 
 init:
 	@$(call PRINT,$(CYAN)🏷️ Docker Tag: $(NC)$(DOCKER_TAG))
@@ -82,7 +89,7 @@ stop: init
 	$(DOCKER_COMPOSE_COMMAND) stop
 
 test: init
-	@echo "$(BLUE)🧪 Running tests...$(NC)"
+	@$(call PRINT,$(BLUE)🧪 Running tests...$(NC))
 	$(CONTAINER_MODE) composer test
 
 composer-install: init
@@ -115,9 +122,13 @@ copy: init
 run: up copy build
 
 coverage:
-	@echo "$(BLUE)🧪 Running tests with coverage...$(NC)"
+	@$(call PRINT,$(BLUE)🧪 Running tests with coverage...$(NC))
 	$(CONTAINER_MODE) composer coverage
 
 coverage-status: coverage
-	@echo "$(BLUE)🧪 Coverage status...$(NC)"
+	@$(call PRINT,$(BLUE)🧪 Coverage status...$(NC))
 	$(CONTAINER_MODE) composer clover-report
+
+exec: init
+	@$(call PRINT,$(BLUE)💻 Connect with container...$(NC))
+	$(CONTAINER_MODE) bash
