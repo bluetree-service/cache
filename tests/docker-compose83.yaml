@@ -8,6 +8,8 @@ services:
     command: ${RUN_COMMAND}
     environment:
       - MEMCACHED_SERVERS=memcached83
+    volumes:
+      - ${MOUNT_POINT}
 
   memcached83:
     image: memcached:latest

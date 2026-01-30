@@ -16,7 +16,8 @@
     "require": {
         "php": "^8.2",
         "psr/cache": "^1.0",
-        "psr/simple-cache": "^1.0"
+        "psr/simple-cache": "^1.0",
+        "bluetree-service/clover-reporter": "^0.3.0"
     },
     "require-optional": {    
         "ext-memcached": "*",
@@ -35,7 +36,8 @@
     "scripts": {
         "test": "./vendor/bin/phpunit --display-warnings",
         "coverage": "./vendor/bin/phpunit --display-warnings --coverage-clover build/logs/clover.xml",
-        "clover-report": "./bin/clover_reporter -c build/logs/clover.xml ./",
+        "clover-report": "./vendor/bin/clover_reporter -c build/logs/clover.xml",
+        "clover-report-full": "./vendor/bin/clover_reporter -f build/logs/clover.xml",
         "test-complete": [
             "@coverage"
         ]

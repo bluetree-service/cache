@@ -3,3 +3,4 @@ tests/var/cache/*
 tests/var/cacheNoAccess
 !tests/var/cache/.gitkeep
 build
+.phpunit.result.cache
