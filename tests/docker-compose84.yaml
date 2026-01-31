@@ -8,11 +8,17 @@ services:
     command: ${RUN_COMMAND}
     environment:
       - MEMCACHED_SERVERS=memcached84
+      - REDIS_SERVERS=redis84
     volumes:
       - ${MOUNT_POINT}
 
   memcached84:
     image: memcached:latest
+    networks:
+      - backend84
+
+  redis84:
+    image: redis:latest
     networks:
       - backend84
 
