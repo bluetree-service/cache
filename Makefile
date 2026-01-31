@@ -40,7 +40,6 @@ container_mode?=0
 compose_file?=tests/docker-compose
 DOCKER_COMPOSE_COMMAND=$(DOCKER_COMPOSE) -f $(compose_file)$(PHP_VERSION).yaml
 MAKE=make
-MEMCACHED_SERVERS=localhost
 mount_local=0
 
 DAEMON=
@@ -65,7 +64,6 @@ export tag
 export LOCAL_USER_ID
 export PHP_VERSION
 export RUN_COMMAND
-export MEMCACHED_SERVERS
 export MOUNT_POINT
 
 init:

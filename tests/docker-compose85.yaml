@@ -11,9 +11,15 @@ services:
     command: ${RUN_COMMAND}
     environment:
       - MEMCACHED_SERVERS=memcached85
+      - REDIS_SERVERS=redis85
 
   memcached85:
     image: memcached:latest
+    networks:
+      - backend85
+
+  redis85:
+    image: redis:latest
     networks:
       - backend85
 

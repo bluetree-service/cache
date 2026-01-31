@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.5.0.0 - 2026-01-31
+### Added
+* Redis support
+### Changed
+* Test run improvement
+
 ## 0.4.0.0 - 2026-01-24
 ### Added
 * Composer scripts for testing
