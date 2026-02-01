@@ -68,8 +68,8 @@ class RedisTest extends TestCase
         });
         
         try {
-            $this->expectExceptionMessage(
-                "Redis exception: php_network_getaddresses: getaddrinfo for redis_none_existing failed: Name does not resolve"
+            $this->expectExceptionMessageMatches(
+            "/Redis exception: php_network_getaddresses: getaddrinfo for redis_none_existing failed: ((Name does not resolve)|(Try again))/i"
             );
             $this->expectException(\BlueCache\CacheException::class);
             $conf = [
