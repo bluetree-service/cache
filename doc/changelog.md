@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.5.0.1 - 2026-02-03
+### Changed
+* One of dependency moved to require-dev
+
 ## 0.5.0.0 - 2026-01-31
 ### Added
 * Redis support
